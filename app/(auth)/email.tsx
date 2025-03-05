@@ -86,7 +86,7 @@ export default function EmailAuthScreen() {
             <StatusBar style="light" />
 
             <ImageBackground
-                source={require('../../assets/images/home.png')}
+                source={require('../../assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >

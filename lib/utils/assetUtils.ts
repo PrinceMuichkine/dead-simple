@@ -25,10 +25,10 @@ export function getAsset(name: string): ImageSourcePropType {
     // Add actual assets that exist
     'icon': require('@/assets/jumbo_app.svg'),
     // Add new assets for the updated UI
-    'home-bg': require('@/assets/images/home.png'),
-    'jumbo-white': require('@/assets/jumbo_white.svg'),
-    'jumbo-black': require('@/assets/jumbo_black.svg'),
-    'jumbo-app': require('@/assets/jumbo_app.svg'),
+    'home-bg': require('@/assets/images/home.webp'),
+    'dead-simple-white': require('@/assets/jumbo_white.svg'),
+    'dead-simple-black': require('@/assets/jumbo_black.svg'),
+    'dead-simple-app': require('@/assets/jumbo_app.svg'),
   };
 
   // Get the asset from the map
@@ -36,7 +36,7 @@ export function getAsset(name: string): ImageSourcePropType {
   
   if (!asset) {
     console.warn(`Asset '${name}' not found`);
-    return assetMap['jumbo-app']; // Return default asset as fallback
+    return assetMap['dead-simple-app']; // Return default asset as fallback
   }
   
   return asset;

@@ -14,8 +14,8 @@ A modern marketplace platform designed to connect merchants and customers with a
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/princemuichkien/jumbo.git
-   cd jumbo
+   git clone https://github.com/princemuichkien/dead-simple.git
+   cd dead-simple
    ```
 
 2. Install dependencies:

@@ -12,7 +12,7 @@
   },
   "auth": {
     "emailScreen": {
-      "title": "Access Jumbo",
+      "title": "Access Dead Simple",
       "subtitle": "Enter your email to receive a link to sign in",
       "placeholder": "Email address**",
       "sendTheLink": "Send the link",
@@ -42,5 +42,57 @@
   },
   "common": {
     "loading": "Loading..."
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Dead Simple",
+      "getStarted": "Get Started",
+      "feature1": {
+        "title": "Grow your business",
+        "description": "Set up a store in minutes and start accepting payments"
+      },
+      "feature2": {
+        "title": "Discover new products",
+        "description": "Connect with people and businesses around you"
+      },
+      "feature3": {
+        "title": "Dont you worry about anything",
+        "description": "Fast, responsive, and reliable platform"
+      }
+    },
+    "profile": {
+      "title": "Create Your Profile",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Your full name",
+      "username": "Username",
+      "usernamePlaceholder": "Choose a username",
+      "continue": "Continue",
+      "fillRequiredFields": "Please fill in all required fields",
+      "photoPickerNotImplemented": "Photo picker is not implemented in this demo"
+    },
+    "store": {
+      "title": "Set Up Your Store",
+      "storeName": "Store Name",
+      "storeNamePlaceholder": "Your store name",
+      "storeDescription": "Store Description",
+      "storeDescriptionPlaceholder": "Tell us about your store",
+      "continue": "Continue",
+      "fillRequiredFields": "Please fill in all required fields",
+      "defaultName": "My Store"
+    },
+    "preferences": {
+      "title": "Your Preferences",
+      "customizeExperience": "Customize Your Experience",
+      "settingsInfo": "You can change these settings anytime in your profile",
+      "pushNotifications": "Push Notifications",
+      "pushNotificationsDesc": "Receive alerts about transactions and activities",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Receive email updates about your account",
+      "darkMode": "Dark Mode",
+      "darkModeDesc": "Switch between light and dark theme",
+      "language": "Language",
+      "languageDesc": "Choose your preferred language",
+      "finish": "Finish Setup"
+    }
   }
 } 

@@ -12,7 +12,7 @@
   },
   "auth": {
     "emailScreen": {
-      "title": "Accéder à Jumbo",
+      "title": "Accéder à Dead Simple",
       "subtitle": "Entrez votre email pour recevoir un lien de connexion",
       "placeholder": "Adresse email**",
       "sendTheLink": "Envoyer le lien",
@@ -42,5 +42,57 @@
   },
   "common": {
     "loading": "Chargement..."
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur Dead Simple",
+      "getStarted": "Commencer",
+      "feature1": {
+        "title": "Vendre en ligne",
+        "description": "Configurez votre boutique en quelques minutes avec un minimum d'étapes"
+      },
+      "feature2": {
+        "title": "Marketplace",
+        "description": "Connectez les marchands et les clients en toute transparence"
+      },
+      "feature3": {
+        "title": "Performance",
+        "description": "Plateforme rapide, réactive et fiable"
+      }
+    },
+    "profile": {
+      "title": "Créez Votre Profil",
+      "fullName": "Nom et Prénom",
+      "fullNamePlaceholder": "Votre nom complet",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Choisissez un nom d'utilisateur",
+      "continue": "Continuer",
+      "fillRequiredFields": "Veuillez remplir tous les champs obligatoires",
+      "photoPickerNotImplemented": "Le sélecteur de photos n'est pas implémenté dans cette démo"
+    },
+    "store": {
+      "title": "Configurez Votre Boutique",
+      "storeName": "Nom de la Boutique",
+      "storeNamePlaceholder": "Nom de votre boutique",
+      "storeDescription": "Description de la Boutique",
+      "storeDescriptionPlaceholder": "Parlez-nous de votre boutique",
+      "continue": "Continuer",
+      "fillRequiredFields": "Veuillez remplir tous les champs obligatoires",
+      "defaultName": "Ma Boutique"
+    },
+    "preferences": {
+      "title": "Vos Préférences",
+      "customizeExperience": "Personnalisez Votre Expérience",
+      "settingsInfo": "Vous pouvez modifier ces paramètres à tout moment dans votre profil",
+      "pushNotifications": "Notifications Push",
+      "pushNotificationsDesc": "Recevez des alertes sur les transactions et les activités",
+      "emailNotifications": "Notifications par Email",
+      "emailNotificationsDesc": "Recevez des mises à jour par email concernant votre compte",
+      "darkMode": "Mode Sombre",
+      "darkModeDesc": "Basculer entre les thèmes clair et sombre",
+      "language": "Langue",
+      "languageDesc": "Choisissez votre langue préférée",
+      "finish": "Terminer la Configuration"
+    }
   }
 } 

@@ -64,7 +64,7 @@ export default function PreferencesScreen() {
     return (
         <View style={globalStyles.container}>
             <ImageBackground
-                source={require('../../assets/images/home.png')}
+                source={require('../../assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
@@ -74,19 +74,6 @@ export default function PreferencesScreen() {
                             contentContainerStyle={styles.scrollContent}
                             showsVerticalScrollIndicator={false}
                         >
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    style={styles.backButton}
-                                    onPress={handleBack}
-                                >
-                                    <Ionicons name="chevron-back" size={24} color={COLORS.white} />
-                                </TouchableOpacity>
-
-                                <Text style={styles.headerTitle}>
-                                    {t('onboarding.preferences.title', 'Your Preferences')}
-                                </Text>
-                            </View>
-
                             <Animated.View
                                 style={[
                                     styles.contentContainer,
@@ -96,10 +83,10 @@ export default function PreferencesScreen() {
                                         : styles.contentContainerLight
                                 ]}
                             >
-                                <Text style={styles.sectionTitle}>
+                                <Text style={[styles.sectionTitle, isDark ? null : { color: COLORS.black }]}>
                                     {t('onboarding.preferences.customizeExperience', 'Customize Your Experience')}
                                 </Text>
-                                <Text style={styles.sectionDescription}>
+                                <Text style={[styles.sectionDescription, isDark ? null : { color: COLORS.black }]}>
                                     {t('onboarding.preferences.settingsInfo', 'You can change these settings anytime in your profile')}
                                 </Text>
 
@@ -107,12 +94,17 @@ export default function PreferencesScreen() {
                                     {/* Push Notifications */}
                                     <View style={styles.preferenceItem}>
                                         <View style={styles.preferenceInfo}>
-                                            <Ionicons name="notifications-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <Ionicons
+                                                name="notifications-outline"
+                                                size={24}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                                style={styles.preferenceIcon}
+                                            />
                                             <View>
-                                                <Text style={styles.preferenceTitle}>
+                                                <Text style={[styles.preferenceTitle, isDark ? null : { color: COLORS.black }]}>
                                                     {t('onboarding.preferences.pushNotifications', 'Push Notifications')}
                                                 </Text>
-                                                <Text style={styles.preferenceDescription}>
+                                                <Text style={[styles.preferenceDescription, isDark ? null : { color: 'rgba(0, 0, 0, 0.7)' }]}>
                                                     {t('onboarding.preferences.pushNotificationsDesc', 'Receive alerts about transactions and activities')}
                                                 </Text>
                                             </View>
@@ -129,12 +121,17 @@ export default function PreferencesScreen() {
                                     {/* Email Notifications */}
                                     <View style={styles.preferenceItem}>
                                         <View style={styles.preferenceInfo}>
-                                            <Ionicons name="mail-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <Ionicons
+                                                name="mail-outline"
+                                                size={24}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                                style={styles.preferenceIcon}
+                                            />
                                             <View>
-                                                <Text style={styles.preferenceTitle}>
+                                                <Text style={[styles.preferenceTitle, isDark ? null : { color: COLORS.black }]}>
                                                     {t('onboarding.preferences.emailNotifications', 'Email Notifications')}
                                                 </Text>
-                                                <Text style={styles.preferenceDescription}>
+                                                <Text style={[styles.preferenceDescription, isDark ? null : { color: 'rgba(0, 0, 0, 0.7)' }]}>
                                                     {t('onboarding.preferences.emailNotificationsDesc', 'Receive email updates about your account')}
                                                 </Text>
                                             </View>
@@ -173,13 +170,18 @@ export default function PreferencesScreen() {
                                     {/* Dark Mode */}
                                     <View style={styles.preferenceItem}>
                                         <View style={styles.preferenceInfo}>
-                                            <Ionicons name="moon-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <Ionicons
+                                                name="moon-outline"
+                                                size={24}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                                style={styles.preferenceIcon}
+                                            />
                                             <View>
-                                                <Text style={styles.preferenceTitle}>
+                                                <Text style={[styles.preferenceTitle, isDark ? null : { color: COLORS.black }]}>
                                                     {t('onboarding.preferences.darkMode', 'Dark Mode')}
                                                 </Text>
-                                                <Text style={styles.preferenceDescription}>
-                                                    {t('onboarding.preferences.darkModeDesc', 'Use dark theme for better visibility at night')}
+                                                <Text style={[styles.preferenceDescription, isDark ? null : { color: 'rgba(0, 0, 0, 0.7)' }]}>
+                                                    {t('onboarding.preferences.darkModeDesc', 'Switch between light and dark theme')}
                                                 </Text>
                                             </View>
                                         </View>
@@ -190,6 +192,26 @@ export default function PreferencesScreen() {
                                             thumbColor={Platform.OS === 'ios' ? '#fff' : darkMode ? COLORS.white : '#f4f3f4'}
                                             ios_backgroundColor="rgba(255, 255, 255, 0.3)"
                                         />
+                                    </View>
+
+                                    {/* Language */}
+                                    <View style={styles.preferenceItem}>
+                                        <View style={styles.preferenceInfo}>
+                                            <Ionicons
+                                                name="language-outline"
+                                                size={24}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                                style={styles.preferenceIcon}
+                                            />
+                                            <View>
+                                                <Text style={[styles.preferenceTitle, isDark ? null : { color: COLORS.black }]}>
+                                                    {t('onboarding.preferences.language', 'Language')}
+                                                </Text>
+                                                <Text style={[styles.preferenceDescription, isDark ? null : { color: 'rgba(0, 0, 0, 0.7)' }]}>
+                                                    {t('onboarding.preferences.languageDesc', 'Choose your preferred language')}
+                                                </Text>
+                                            </View>
+                                        </View>
                                     </View>
                                 </View>
 
@@ -233,32 +255,17 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        padding: 20,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 0,
-        zIndex: 10,
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        textAlign: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 25,
+        paddingBottom: 20,
+        minHeight: height - 100,
     },
     contentContainer: {
         alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 40,
+        marginBottom: 50,
         borderRadius: 6,
         paddingVertical: 25,
         paddingHorizontal: 20,
@@ -267,13 +274,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     contentContainerLight: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
     },
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
         color: COLORS.white,
-        marginBottom: 10,
+        marginBottom: 8,
         textAlign: 'center',
     },
     sectionDescription: {
@@ -284,13 +291,13 @@ const styles = StyleSheet.create({
     },
     preferencesContainer: {
         width: '100%',
-        marginBottom: 30,
+        marginBottom: 20,
     },
     preferenceItem: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: 15,
         paddingBottom: 15,
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(255, 255, 255, 0.2)',
@@ -320,7 +327,7 @@ const styles = StyleSheet.create({
         height: 54,
         backgroundColor: COLORS.primary,
         borderRadius: 6,
-        borderWidth: 1,
+        borderWidth: 6,
         borderColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',

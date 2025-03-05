@@ -69,7 +69,7 @@ export default function StoreSetupScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ImageBackground
-                source={require('../../assets/images/home.png')}
+                source={require('../../assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
@@ -79,19 +79,6 @@ export default function StoreSetupScreen() {
                             contentContainerStyle={styles.scrollContent}
                             showsVerticalScrollIndicator={false}
                         >
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    style={styles.backButton}
-                                    onPress={handleBack}
-                                >
-                                    <Ionicons name="chevron-back" size={24} color={COLORS.white} />
-                                </TouchableOpacity>
-
-                                <Text style={styles.headerTitle}>
-                                    {t('onboarding.store.title', 'Set Up Your Store')}
-                                </Text>
-                            </View>
-
                             <Animated.View
                                 style={[
                                     styles.contentContainer,
@@ -110,14 +97,14 @@ export default function StoreSetupScreen() {
                                 <View style={styles.formContainer}>
                                     {/* Store Name Input */}
                                     <View style={styles.inputContainer}>
-                                        <Text style={styles.inputLabel}>
+                                        <Text style={[styles.inputLabel, isDark ? null : { color: COLORS.black }]}>
                                             {t('onboarding.store.storeName', 'Store Name')} *
                                         </Text>
-                                        <View style={styles.inputWrapper}>
+                                        <View style={[styles.inputWrapper, isDark ? null : { backgroundColor: 'rgba(0, 0, 0, 0.05)' }]}>
                                             <TextInput
-                                                style={styles.input}
+                                                style={[styles.input, isDark ? null : { color: COLORS.black }]}
                                                 placeholder={t('onboarding.store.storeNamePlaceholder', 'Your store name')}
-                                                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                                                placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)"}
                                                 value={storeName}
                                                 onChangeText={setStoreName}
                                             />
@@ -126,14 +113,22 @@ export default function StoreSetupScreen() {
 
                                     {/* Store Description Input */}
                                     <View style={styles.inputContainer}>
-                                        <Text style={styles.inputLabel}>
+                                        <Text style={[styles.inputLabel, isDark ? null : { color: COLORS.black }]}>
                                             {t('onboarding.store.storeDescription', 'Store Description')}
                                         </Text>
-                                        <View style={[styles.inputWrapper, styles.descriptionInputWrapper]}>
+                                        <View style={[
+                                            styles.inputWrapper,
+                                            styles.descriptionInputWrapper,
+                                            isDark ? null : { backgroundColor: 'rgba(0, 0, 0, 0.05)' }
+                                        ]}>
                                             <TextInput
-                                                style={[styles.input, styles.descriptionInput]}
+                                                style={[
+                                                    styles.input,
+                                                    styles.descriptionInput,
+                                                    isDark ? null : { color: COLORS.black }
+                                                ]}
                                                 placeholder={t('onboarding.store.storeDescriptionPlaceholder', 'Tell us about your store')}
-                                                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                                                placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)"}
                                                 value={storeDescription}
                                                 onChangeText={setStoreDescription}
                                                 multiline
@@ -184,46 +179,30 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        padding: 20,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 0,
-        zIndex: 10,
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        textAlign: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 25,
+        paddingBottom: 20,
+        minHeight: height - 100,
     },
     contentContainer: {
         alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 40,
+        marginBottom: 50,
         borderRadius: 6,
         paddingVertical: 25,
         paddingHorizontal: 20,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     contentContainerDark: {
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     contentContainerLight: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
     },
     formContainer: {
         width: '100%',
-        marginBottom: 25,
+        marginBottom: 20,
     },
     inputContainer: {
         marginBottom: 15,
@@ -258,7 +237,7 @@ const styles = StyleSheet.create({
         height: 54,
         backgroundColor: COLORS.primary,
         borderRadius: 6,
-        borderWidth: 1,
+        borderWidth: 6,
         borderColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -8,7 +8,8 @@ import {
     Dimensions,
     ScrollView,
     Animated,
-    Platform
+    Platform,
+    Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/contexts/ThemeContext';
@@ -26,6 +27,25 @@ export default function WelcomeScreen() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const fadeAnim = useState(new Animated.Value(0))[0];
+    const shimmerAnim = useRef(new Animated.Value(0)).current;
+
+    // Shimmer animation sequence
+    const startShimmerAnimation = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(shimmerAnim, {
+                    toValue: 1,
+                    duration: 1500,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(shimmerAnim, {
+                    toValue: 0,
+                    duration: 1500,
+                    useNativeDriver: true,
+                })
+            ])
+        ).start();
+    };
 
     // Fade in animation for the elements
     useEffect(() => {
@@ -34,25 +54,32 @@ export default function WelcomeScreen() {
             duration: 1000,
             useNativeDriver: true,
         }).start();
+
+        // Start shimmer effect
+        startShimmerAnimation();
     }, []);
 
     const handleGetStarted = () => {
         setIsLoading(true);
-        // Navigate to the next onboarding screen after a brief delay
         setTimeout(() => {
-            setIsLoading(false);
-            router.push("/(onboarding)/profile");
-        }, 1000);
+            router.push('/(onboarding)/profile');
+        }, 1500);
     };
 
+    // Interpolate shimmer animation
+    const shimmerTranslate = shimmerAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-width * 0.5, width * 1.5]
+    });
+
     return (
-        <View style={globalStyles.container}>
+        <View style={{ flex: 1 }}>
             <ImageBackground
-                source={require('../../assets/images/home.png')}
+                source={require('@/assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
-                <View style={styles.overlay}>
+                <View style={[styles.overlay, isDark ? null : { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}>
                     <SafeAreaView style={styles.safeArea}>
                         <ScrollView
                             contentContainerStyle={styles.scrollContent}
@@ -64,44 +91,61 @@ export default function WelcomeScreen() {
                                     style={[styles.logo, { opacity: fadeAnim }]}
                                     resizeMode="contain"
                                 />
-                                <Animated.Text style={[styles.welcomeTitle, { opacity: fadeAnim }]}>
-                                    {t('onboarding.welcome.title', 'Welcome to Jumbo')}
-                                </Animated.Text>
                             </View>
 
                             <Animated.View
                                 style={[
                                     styles.contentContainer,
-                                    { opacity: fadeAnim },
-                                    isDark
-                                        ? styles.contentContainerDark
-                                        : styles.contentContainerLight
+                                    isDark ? styles.contentContainerDark : styles.contentContainerLight,
+                                    {
+                                        opacity: fadeAnim, transform: [{
+                                            translateY: fadeAnim.interpolate({
+                                                inputRange: [0, 1],
+                                                outputRange: [50, 0]
+                                            })
+                                        }]
+                                    }
                                 ]}
                             >
+                                <View style={styles.logoContainer}>
+                                    <Text style={[styles.logoText, isDark ? { color: COLORS.white } : { color: COLORS.primary }]}>
+                                        {t('onboarding.welcome.title', 'Welcome to Dead Simple')}
+                                    </Text>
+                                    <Animated.View style={[styles.shimmerOverlay, { transform: [{ translateX: shimmerTranslate }] }]} />
+                                </View>
+
                                 <View style={styles.featuresContainer}>
                                     <View style={styles.featureItem}>
                                         <View style={styles.featureIconContainer}>
-                                            <Ionicons name="wallet-outline" size={24} color={COLORS.primary} />
+                                            <Ionicons
+                                                name="rocket-outline"
+                                                size={28}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                            />
                                         </View>
                                         <View style={styles.featureTextContainer}>
-                                            <Text style={styles.featureTitle}>
-                                                {t('onboarding.welcome.feature1.title', 'Easy Payments')}
+                                            <Text style={[styles.featureTitle, isDark ? { color: COLORS.white } : { color: COLORS.primary }]}>
+                                                {t('onboarding.welcome.feature1.title', 'Grow your business')}
                                             </Text>
-                                            <Text style={styles.featureDescription}>
-                                                {t('onboarding.welcome.feature1.description', 'Send and receive money quickly and securely')}
+                                            <Text style={[styles.featureDescription, isDark ? { color: COLORS.lightGray } : { color: COLORS.gray }]}>
+                                                {t('onboarding.welcome.feature1.description', 'Set up a store in minutes and start accepting payments')}
                                             </Text>
                                         </View>
                                     </View>
 
                                     <View style={styles.featureItem}>
                                         <View style={styles.featureIconContainer}>
-                                            <Ionicons name="people-outline" size={24} color={COLORS.primary} />
+                                            <Ionicons
+                                                name="people-outline"
+                                                size={28}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                            />
                                         </View>
                                         <View style={styles.featureTextContainer}>
-                                            <Text style={styles.featureTitle}>
-                                                {t('onboarding.welcome.feature2.title', 'Community')}
+                                            <Text style={[styles.featureTitle, isDark ? { color: COLORS.white } : { color: COLORS.primary }]}>
+                                                {t('onboarding.welcome.feature2.title', 'Discover new products')}
                                             </Text>
-                                            <Text style={styles.featureDescription}>
+                                            <Text style={[styles.featureDescription, isDark ? { color: COLORS.lightGray } : { color: COLORS.gray }]}>
                                                 {t('onboarding.welcome.feature2.description', 'Connect with people and businesses around you')}
                                             </Text>
                                         </View>
@@ -109,14 +153,18 @@ export default function WelcomeScreen() {
 
                                     <View style={styles.featureItem}>
                                         <View style={styles.featureIconContainer}>
-                                            <Ionicons name="shield-checkmark-outline" size={24} color={COLORS.primary} />
+                                            <Ionicons
+                                                name="shield-checkmark-outline"
+                                                size={28}
+                                                color={isDark ? COLORS.white : COLORS.primary}
+                                            />
                                         </View>
                                         <View style={styles.featureTextContainer}>
-                                            <Text style={styles.featureTitle}>
-                                                {t('onboarding.welcome.feature3.title', 'Secure')}
+                                            <Text style={[styles.featureTitle, isDark ? { color: COLORS.white } : { color: COLORS.primary }]}>
+                                                {t('onboarding.welcome.feature3.title', 'Dont you worry about anything')}
                                             </Text>
-                                            <Text style={styles.featureDescription}>
-                                                {t('onboarding.welcome.feature3.description', 'Your data and transactions are always protected')}
+                                            <Text style={[styles.featureDescription, isDark ? { color: COLORS.lightGray } : { color: COLORS.gray }]}>
+                                                {t('onboarding.welcome.feature3.description', 'Fast, responsive, and reliable platform')}
                                             </Text>
                                         </View>
                                     </View>
@@ -125,7 +173,7 @@ export default function WelcomeScreen() {
                                 <TouchableOpacity
                                     style={[
                                         styles.button,
-                                        isLoading && styles.buttonDisabled
+                                        isLoading && { opacity: 0.7 }
                                     ]}
                                     onPress={handleGetStarted}
                                     disabled={isLoading}
@@ -162,47 +210,57 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 25,
+        paddingBottom: 20,
+        minHeight: height - 100,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 10,
         marginBottom: 20,
         position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 0,
-        zIndex: 10,
     },
     logo: {
         width: width * 0.6,
         height: 100,
     },
-    welcomeTitle: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        marginTop: 20,
-        textAlign: 'center',
-    },
     contentContainer: {
         alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 40,
+        marginBottom: 50,
         borderRadius: 6,
         paddingVertical: 25,
         paddingHorizontal: 20,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     contentContainerDark: {
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     contentContainerLight: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    },
+    logoContainer: {
+        alignItems: 'center',
+        marginBottom: 30,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    logoText: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    shimmerOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        transform: [{ skewX: '-20deg' }],
     },
     featuresContainer: {
         width: '100%',
@@ -211,13 +269,13 @@ const styles = StyleSheet.create({
     featureItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 25,
+        marginBottom: 20,
     },
     featureIconContainer: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 15,
@@ -226,31 +284,27 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     featureTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        marginBottom: 5,
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 4,
     },
     featureDescription: {
         fontSize: 14,
-        color: 'rgba(255, 255, 255, 0.8)',
+        opacity: 0.8,
     },
     button: {
         width: '100%',
         height: 54,
-        backgroundColor: COLORS.primary,
         borderRadius: 6,
-        borderWidth: 1,
+        backgroundColor: COLORS.primary,
+        borderWidth: 6,
         borderColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    buttonDisabled: {
-        opacity: 0.7,
     },
     buttonText: {
         color: COLORS.white,
         fontSize: 16,
         fontWeight: '600',
-    },
+    }
 }); 

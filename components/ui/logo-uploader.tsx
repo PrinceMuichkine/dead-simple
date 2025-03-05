@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
     View,
-    Text,
     TouchableOpacity,
     Image,
+    Text,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -120,29 +120,34 @@ export default function LogoUploader({ currentLogo, onLogoUpdate, companyName }:
                 <View style={styles.logoContainer}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
-            ) : previewUrl ? (
-                <View style={styles.logoWrapper}>
-                    <Image source={{ uri: previewUrl }} style={styles.logo} />
-                    <TouchableOpacity style={styles.removeButton} onPress={handleRemove}>
-                        <Ionicons name="close-circle" size={24} color={COLORS.danger} />
-                    </TouchableOpacity>
-                </View>
             ) : (
-                <View style={styles.placeholderContainer}>
-                    <Text style={styles.initialText}>{getInitial(companyName)}</Text>
-                </View>
+                <TouchableOpacity style={styles.logoTouchable} onPress={pickImage}>
+                    {previewUrl ? (
+                        <Image source={{ uri: previewUrl }} style={styles.logoImage} />
+                    ) : (
+                        <View style={styles.placeholderContainer}>
+                            <Text style={styles.initialText}>{getInitial(companyName)}</Text>
+                        </View>
+                    )}
+
+                    <View style={styles.editBadge}>
+                        <Ionicons name="camera" size={16} color={COLORS.white} />
+                    </View>
+                </TouchableOpacity>
             )}
 
-            <TouchableOpacity
-                style={styles.uploadButton}
-                onPress={pickImage}
-                disabled={isUploading}
-            >
-                <Ionicons name="cloud-upload-outline" size={20} color={COLORS.white} style={styles.buttonIcon} />
-                <Text style={styles.buttonText}>
-                    {previewUrl ? 'Change Logo' : 'Upload Logo'}
-                </Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                {previewUrl && (
+                    <TouchableOpacity
+                        style={styles.removeButton}
+                        onPress={handleRemove}
+                        disabled={isUploading}
+                    >
+                        <Ionicons name="trash-outline" size={18} color={COLORS.danger} style={styles.buttonIcon} />
+                        <Text style={[styles.buttonText, { color: COLORS.danger }]}>Remove</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
         </View>
     );
 }
@@ -150,68 +155,69 @@ export default function LogoUploader({ currentLogo, onLogoUpdate, companyName }:
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        justifyContent: 'center',
         marginBottom: 20,
+    },
+    logoTouchable: {
+        position: 'relative',
+        marginBottom: 10,
     },
     logoContainer: {
         width: 100,
         height: 100,
-        borderRadius: 6, // Following your style guidelines
+        borderRadius: 6,
         backgroundColor: 'rgba(0, 0, 0, 0.05)',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 15,
     },
-    logoWrapper: {
-        position: 'relative',
-        marginBottom: 15,
-    },
-    logo: {
+    logoImage: {
         width: 100,
         height: 100,
-        borderRadius: 6, // Following your style guidelines
-    },
-    removeButton: {
-        position: 'absolute',
-        top: -10,
-        right: -10,
-        backgroundColor: COLORS.white,
-        borderRadius: 15,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1.5,
+        borderRadius: 6,
     },
     placeholderContainer: {
         width: 100,
         height: 100,
-        borderRadius: 6, // Following your style guidelines
+        borderRadius: 6,
         backgroundColor: COLORS.primary,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 15,
     },
     initialText: {
         fontSize: 36,
         fontWeight: 'bold',
         color: COLORS.white,
     },
-    uploadButton: {
+    editBadge: {
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        backgroundColor: COLORS.primary,
+        borderRadius: 6,
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: COLORS.white,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    removeButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.primary,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 6, // Following your style guidelines
+        padding: 8,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: COLORS.danger,
     },
     buttonIcon: {
-        marginRight: 8,
+        marginRight: 5,
     },
     buttonText: {
-        color: COLORS.white,
-        fontWeight: '600',
+        fontWeight: '500',
         fontSize: 16,
-    },
+    }
 });

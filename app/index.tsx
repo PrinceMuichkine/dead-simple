@@ -127,7 +127,7 @@ export default function HomePage() {
             <StatusBar style="light" />
 
             <ImageBackground
-                source={require('../assets/images/home.png')} // Using existing image
+                source={require('../assets/images/home.webp')} // Using existing image
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >

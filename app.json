@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "jumbo",
-    "slug": "jumbo",
+    "name": "dead-simple",
+    "slug": "dead-simple",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jumbo.app"
+      "bundleIdentifier": "com.dead-simple.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FF5722"
       },
-      "package": "com.jumbo.app"
+      "package": "com.dead-simple.app"
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +36,7 @@
       "expo-secure-store",
       "expo-image-picker"
     ],
-    "scheme": "jumbo",
+    "scheme": "dead-simple",
     "experiments": {
       "typedRoutes": true
     }

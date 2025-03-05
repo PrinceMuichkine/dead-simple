@@ -77,7 +77,7 @@ export default function ProfileSetupScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ImageBackground
-                source={require('../../assets/images/home.png')}
+                source={require('../../assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
@@ -87,19 +87,6 @@ export default function ProfileSetupScreen() {
                             contentContainerStyle={styles.scrollContent}
                             showsVerticalScrollIndicator={false}
                         >
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    style={styles.backButton}
-                                    onPress={handleBack}
-                                >
-                                    <Ionicons name="chevron-back" size={24} color={COLORS.white} />
-                                </TouchableOpacity>
-
-                                <Text style={styles.headerTitle}>
-                                    {t('onboarding.profile.title', 'Create Your Profile')}
-                                </Text>
-                            </View>
-
                             <Animated.View
                                 style={[
                                     styles.contentContainer,
@@ -118,14 +105,14 @@ export default function ProfileSetupScreen() {
                                 <View style={styles.formContainer}>
                                     {/* Full Name Input */}
                                     <View style={styles.inputContainer}>
-                                        <Text style={styles.inputLabel}>
+                                        <Text style={[styles.inputLabel, isDark ? null : { color: COLORS.black }]}>
                                             {t('onboarding.profile.fullName', 'Full Name')} *
                                         </Text>
-                                        <View style={styles.inputWrapper}>
+                                        <View style={[styles.inputWrapper, isDark ? null : { backgroundColor: 'rgba(0, 0, 0, 0.05)' }]}>
                                             <TextInput
-                                                style={styles.input}
+                                                style={[styles.input, isDark ? null : { color: COLORS.black }]}
                                                 placeholder={t('onboarding.profile.fullNamePlaceholder', 'Your full name')}
-                                                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                                                placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)"}
                                                 value={fullName}
                                                 onChangeText={setFullName}
                                             />
@@ -134,17 +121,16 @@ export default function ProfileSetupScreen() {
 
                                     {/* Username Input */}
                                     <View style={styles.inputContainer}>
-                                        <Text style={styles.inputLabel}>
+                                        <Text style={[styles.inputLabel, isDark ? null : { color: COLORS.black }]}>
                                             {t('onboarding.profile.username', 'Username')} *
                                         </Text>
-                                        <View style={styles.inputWrapper}>
+                                        <View style={[styles.inputWrapper, isDark ? null : { backgroundColor: 'rgba(0, 0, 0, 0.05)' }]}>
                                             <TextInput
-                                                style={styles.input}
+                                                style={[styles.input, isDark ? null : { color: COLORS.black }]}
                                                 placeholder={t('onboarding.profile.usernamePlaceholder', 'Choose a username')}
-                                                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                                                placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)"}
                                                 value={username}
                                                 onChangeText={setUsername}
-                                                autoCapitalize="none"
                                             />
                                         </View>
                                     </View>
@@ -190,32 +176,17 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        padding: 20,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 0,
-        zIndex: 10,
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        textAlign: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 25,
+        paddingBottom: 20,
+        minHeight: height - 100,
     },
     contentContainer: {
         alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 40,
+        marginBottom: 50,
         borderRadius: 6,
         paddingVertical: 25,
         paddingHorizontal: 20,
@@ -224,11 +195,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     contentContainerLight: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
     },
     avatarContainer: {
         alignItems: 'center',
-        marginBottom: 25,
+        marginBottom: 20,
     },
     avatarWrapper: {
         width: 120,
@@ -264,10 +235,10 @@ const styles = StyleSheet.create({
     },
     formContainer: {
         width: '100%',
-        marginBottom: 30,
+        marginBottom: 20,
     },
     inputContainer: {
-        marginBottom: 20,
+        marginBottom: 15,
     },
     inputLabel: {
         fontSize: 16,
@@ -290,7 +261,7 @@ const styles = StyleSheet.create({
         height: 54,
         backgroundColor: COLORS.primary,
         borderRadius: 6,
-        borderWidth: 1,
+        borderWidth: 6,
         borderColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
