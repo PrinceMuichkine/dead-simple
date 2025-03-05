@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/utils/supabase/client';
 import { StorageOptions } from '@/lib/types/storage.types';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';

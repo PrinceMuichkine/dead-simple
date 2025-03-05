@@ -7,31 +7,38 @@ import {
     TouchableOpacity,
     Platform,
     Dimensions,
-    ActivityIndicator,
     ImageBackground,
     KeyboardAvoidingView,
     ScrollView,
     Animated,
-    Linking,
+    Linking
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useAuth } from '@/lib/contexts/AuthContext';
-import { useTheme } from '@/lib/contexts/ThemeContext';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signInWithOAuth } from '@/lib/utils/supabase/client';
-import { getAsset } from '@/lib/utils/assetUtils';
-import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
 import PhoneNumberInput from '@/components/ui/phone-number-input';
+import { useTheme } from '@/lib/contexts/ThemeContext';
+import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
+
+// We'll need to implement or adapt these imports as we build out the app
+// import { useAuth } from '@/lib/contexts/AuthContext';
+// import { signInWithOAuth } from '@/lib/supabase/client';
+// import { getAsset } from '@/lib/utils/assetUtils';
 
 const { width, height } = Dimensions.get('window');
 
+// Temporary color constants until we fully integrate the global styles
+const LOCAL_COLORS = {
+    danger: '#DB4437',
+    warning: '#F4B400',
+    black: '#121212',
+    transparentOverlay: 'rgba(0, 0, 0, 0.3)',
+};
+
 type UserType = 'merchant' | 'shopper';
 
-export default function HomeScreen() {
-    const router = useRouter();
-    const { user, isLoading } = useAuth();
+export default function HomePage() {
+    // const { user, isLoading } = useAuth(); // We'll add this when AuthContext is set up
     const { isDark } = useTheme();
     const [phone, setPhone] = useState('');
     const [isAuthLoading, setIsAuthLoading] = useState(false);
@@ -60,14 +67,14 @@ export default function HomeScreen() {
 
         setIsAuthLoading(true);
         try {
-            const result = await signInWithOAuth(provider);
-            if (!result.success) {
-                console.error(`${provider} auth failed:`, result.error);
-                // Show error to user
-            }
+            // Placeholder for OAuth implementation
+            console.log(`${provider} auth initiated`);
+            // const result = await signInWithOAuth(provider);
+            // if (!result.success) {
+            //     console.error(`${provider} auth failed:`, result.error);
+            // }
         } catch (error) {
             console.error(`${provider} auth error:`, error);
-            // Show error to user
         } finally {
             setIsAuthLoading(false);
         }
@@ -77,18 +84,16 @@ export default function HomeScreen() {
     const handlePhoneAuth = () => {
         if (!phone || phone.length < 10 || isAuthLoading) return;
 
-        router.push({
-            pathname: '/auth/verify',
-            params: { phone, userType }
-        });
+        // For development, just log the intent
+        console.log(`Would navigate to verify screen with phone: ${phone}, userType: ${userType}`);
+        // We can implement this with router.push once type issues are resolved
     };
 
     // Handle email authentication
     const handleEmailAuth = () => {
-        router.push({
-            pathname: '/auth/email',
-            params: { userType }
-        });
+        // For development, just log the intent
+        console.log(`Would navigate to email auth screen with userType: ${userType}`);
+        // We can implement this with router.push once type issues are resolved
     };
 
     // Toggle user type between merchant and shopper
@@ -96,13 +101,14 @@ export default function HomeScreen() {
         setUserType(type);
     };
 
-    if (isLoading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLORS.white} />
-            </View>
-        );
-    }
+    // Loading state (temporarily disabled until we set up AuthContext)
+    // if (isLoading) {
+    //     return (
+    //         <View style={styles.loadingContainer}>
+    //             <ActivityIndicator size="large" color={COLORS.white} />
+    //         </View>
+    //     );
+    // }
 
     return (
         <KeyboardAvoidingView
@@ -112,7 +118,7 @@ export default function HomeScreen() {
             <StatusBar style="light" />
 
             <ImageBackground
-                source={getAsset('home-bg')}
+                source={require('../assets/images/home.png')} // Using existing image
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
@@ -124,7 +130,7 @@ export default function HomeScreen() {
                         >
                             <View style={styles.logoContainer}>
                                 <Image
-                                    source={getAsset('jumbo-white')}
+                                    source={require('@/assets/jumbo_white.svg')}
                                     style={styles.logo}
                                     resizeMode="contain"
                                 />
@@ -235,7 +241,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.black,
+        backgroundColor: LOCAL_COLORS.black,
     },
     backgroundImage: {
         flex: 1,
@@ -244,7 +250,7 @@ const styles = StyleSheet.create({
     },
     overlay: {
         flex: 1,
-        backgroundColor: COLORS.transparentOverlay,
+        backgroundColor: LOCAL_COLORS.transparentOverlay,
     },
     container: {
         flex: 1,
@@ -288,7 +294,7 @@ const styles = StyleSheet.create({
         marginTop: 12,
         marginBottom: -12,
         width: '100%',
-        backgroundColor: COLORS.warning,
+        backgroundColor: LOCAL_COLORS.warning,
         height: 54,
     },
     dividerContainer: {
@@ -333,16 +339,48 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primary,
     },
     googleButton: {
-        backgroundColor: COLORS.danger,
+        backgroundColor: LOCAL_COLORS.danger,
     },
     appleButton: {
-        backgroundColor: COLORS.black,
+        backgroundColor: LOCAL_COLORS.black,
     },
     socialButtonText: {
         color: COLORS.white,
         fontWeight: '600',
         fontSize: 16,
         textAlign: 'center',
+    },
+    userTypeContainer: {
+        width: '100%',
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    userTypeLabel: {
+        color: COLORS.white,
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    userTypeButtons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    userTypeButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        marginHorizontal: 5,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    },
+    userTypeButtonActive: {
+        backgroundColor: COLORS.primary,
+    },
+    userTypeButtonText: {
+        color: COLORS.white,
+        fontSize: 14,
+    },
+    userTypeButtonTextActive: {
+        fontWeight: 'bold',
     },
     footer: {
         alignItems: 'center',

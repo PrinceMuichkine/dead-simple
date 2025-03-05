@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/utils/supabase/client';
 import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 // Define our user types
@@ -86,34 +86,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
         getInitialSession();
 
         return () => {
-            authListener.subscription.unsubscribe();
+            // Fix: Don't attempt to unsubscribe on web platform if there's no subscription
+            if (authListener?.subscription) {
+                authListener.subscription.unsubscribe();
+            }
         };
     }, []);
 
     // Get the initial session
     const getInitialSession = async () => {
         try {
+            // Platform-specific error handling for web
             const { data } = await supabase.auth.getSession();
             setSession(data.session);
 
             if (data.session) {
                 // Fetch user profile data
-                const { data: profileData, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', data.session.user.id)
-                    .single();
+                try {
+                    const { data: profileData, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', data.session.user.id)
+                        .single();
 
-                if (error) throw error;
-
-                setUser({
-                    id: data.session.user.id,
-                    email: data.session.user.email,
-                    phone: data.session.user.phone,
-                    userType: profileData?.user_type || null,
-                    kycLevel: profileData?.kyc_level || null,
-                    storeId: profileData?.store_id || null,
-                });
+                    if (!error) {
+                        setUser({
+                            id: data.session.user.id,
+                            email: data.session.user.email,
+                            phone: data.session.user.phone,
+                            userType: profileData?.user_type || null,
+                            kycLevel: profileData?.kyc_level || null,
+                            storeId: profileData?.store_id || null,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching profile:', error);
+                }
             }
         } catch (error) {
             console.error('Error getting initial session:', error);

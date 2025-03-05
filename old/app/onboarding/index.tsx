@@ -21,7 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/utils/supabase/client';
 import { CATEGORIES, INTERESTS } from "@/lib/data/onboarding";
 import { COLORS } from '@/lib/styles/globalStyles';
 

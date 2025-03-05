@@ -4,14 +4,12 @@ import {
     TextInput,
     Text,
     StyleSheet,
-    Dimensions,
     TouchableOpacity,
     Modal,
     FlatList,
     SafeAreaView,
     TextStyle,
-    useWindowDimensions,
-    Platform
+    useWindowDimensions
 } from "react-native";
 import { COLORS } from "@/lib/styles/globalStyles";
 import { Ionicons } from "@expo/vector-icons";

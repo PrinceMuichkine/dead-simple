@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link } from 'expo-router/build/link/Link';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -10,9 +10,8 @@ export function ExternalLink(
     <Link
       target="_blank"
       {...props}
-      // @ts-expect-error: External URLs are not typed.
       href={props.href}
-      onPress={(e) => {
+      onPress={(e: React.MouseEvent<HTMLAnchorElement>) => {
         if (Platform.OS !== 'web') {
           // Prevent the default behavior of linking to the default browser on native.
           e.preventDefault();

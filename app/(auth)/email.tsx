@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/contexts/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter } from 'expo-router';
+import { useRouter } from 'expo-router/build/hooks';
 
 export default function EmailAuthScreen() {
     const { isDark } = useTheme();
@@ -26,7 +26,7 @@ export default function EmailAuthScreen() {
             <StatusBar style={isDark ? 'light' : 'dark'} />
             <View style={styles.content}>
                 <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-                    Email Sign In
+                    Email SSO
                 </Text>
                 <Text style={[styles.subtitle, { color: isDark ? '#CCCCCC' : '#666666' }]}>
                     Enter your email to receive a sign in link

@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS } from '@/lib/styles/globalStyles';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/utils/supabase/client';
 
 interface LogoUploaderProps {
     currentLogo: string | null;

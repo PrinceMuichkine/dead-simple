@@ -15,7 +15,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { useTheme } from '@/lib/contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/utils/supabase/client';
 
 // Mock data for analytics (would be replaced with real data from backend)
 const MOCK_ANALYTICS = {

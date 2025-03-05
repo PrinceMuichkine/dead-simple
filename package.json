@@ -3,11 +3,15 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --host localhost --port 8081",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "web:dev": "expo start --web --https --clear --localhost",
+    "test": "jest --watchAll",
+    "update:types": "bunx supabase gen types typescript --project-id ngdwxcejxtluaecusrkv > lib/types/database.types.ts",
+    "lint": "bun --bun eslint . --ext .ts,.tsx",
+    "format": "bun --bun prettier --write ."
   },
   "jest": {
     "preset": "jest-expo"
@@ -15,11 +19,16 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "^7.0.14",
+    "@supabase/supabase-js": "^2.49.1",
+    "base64-arraybuffer": "^1.0.2",
     "expo": "~52.0.37",
     "expo-av": "~15.0.2",
     "expo-font": "~13.0.4",
+    "expo-haptics": "^14.0.1",
+    "expo-image-picker": "^16.0.6",
     "expo-linking": "~7.0.5",
     "expo-router": "~4.0.17",
+    "expo-secure-store": "^14.0.1",
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.8",
@@ -27,9 +36,11 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
+    "react-native-gesture-handler": "^2.20.2",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
+    "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {

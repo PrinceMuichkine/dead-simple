@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/utils/supabase/client';
 import { COLORS } from '@/lib/styles/globalStyles';
 import { useNotificationContext } from '@/lib/contexts/NotificationContext';
 

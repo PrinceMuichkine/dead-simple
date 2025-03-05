@@ -6,35 +6,79 @@ import { parse as parseUrl } from 'expo-linking';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
+// Check if localStorage is available
+const isLocalStorageAvailable = () => {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+};
+
 // Platform-specific storage implementation
 const getSupabaseStorage = () => {
   if (Platform.OS === 'web') {
     // Use localStorage for web platform
     return {
       getItem: (key: string) => {
-        const value = localStorage.getItem(key);
-        return Promise.resolve(value);
+        try {
+          const value = localStorage.getItem(key);
+          return Promise.resolve(value);
+        } catch (error) {
+          console.error('Error getting item from localStorage:', error);
+          return Promise.resolve(null);
+        }
       },
       setItem: (key: string, value: string) => {
-        localStorage.setItem(key, value);
-        return Promise.resolve(undefined);
+        try {
+          localStorage.setItem(key, value);
+          return Promise.resolve();
+        } catch (error) {
+          console.error('Error setting item in localStorage:', error);
+          return Promise.resolve();
+        }
       },
       removeItem: (key: string) => {
-        localStorage.removeItem(key);
-        return Promise.resolve(undefined);
+        try {
+          localStorage.removeItem(key);
+          return Promise.resolve();
+        } catch (error) {
+          console.error('Error removing item from localStorage:', error);
+          return Promise.resolve();
+        }
       },
     };
   } else {
     // Use SecureStore for native platforms
     return {
-      getItem: (key: string) => {
-        return SecureStore.getItemAsync(key);
+      getItem: async (key: string) => {
+        try {
+          return await SecureStore.getItemAsync(key);
+        } catch (error) {
+          console.error('Error getting item from SecureStore:', error);
+          return null;
+        }
       },
-      setItem: (key: string, value: string) => {
-        return SecureStore.setItemAsync(key, value);
+      setItem: async (key: string, value: string) => {
+        try {
+          await SecureStore.setItemAsync(key, value);
+          return Promise.resolve();
+        } catch (error) {
+          console.error('Error setting item in SecureStore:', error);
+          return Promise.resolve();
+        }
       },
-      removeItem: (key: string) => {
-        return SecureStore.deleteItemAsync(key);
+      removeItem: async (key: string) => {
+        try {
+          await SecureStore.deleteItemAsync(key);
+          return Promise.resolve();
+        } catch (error) {
+          console.error('Error removing item from SecureStore:', error);
+          return Promise.resolve();
+        }
       },
     };
   }
