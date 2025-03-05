@@ -26,7 +26,17 @@ export default function ProfilePictureUploader({
 }: ProfilePictureUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatar);
-    const { error, success } = useNotificationContext();
+
+    // Use a try-catch to handle cases where the NotificationProvider is not available
+    let notificationContext = { error: console.error, success: console.log };
+    try {
+        notificationContext = useNotificationContext();
+    } catch (e) {
+        // Fallback to console methods if the context is not available
+        console.warn('NotificationContext not available, using fallback');
+    }
+
+    const { error, success } = notificationContext;
 
     const pickImage = async () => {
         try {

@@ -5,7 +5,6 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
     NativeSyntheticEvent,
@@ -25,6 +24,8 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '@/components/ui/button-expand';
+import { LdrHatch } from '@/components/ui/ldrs';
+import { useTheme } from '@/lib/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -44,6 +45,7 @@ export default function VerifyScreen() {
     const router = useRouter();
     const { phone, userType = 'merchant' } = useLocalSearchParams();
     const { updateSession } = useAuth();
+    const { isDark } = useTheme();
 
     const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
     const [isLoading, setIsLoading] = useState(false);
@@ -210,7 +212,12 @@ export default function VerifyScreen() {
                                 />
                             </View>
 
-                            <View style={styles.contentContainer}>
+                            <View style={[
+                                styles.contentContainer,
+                                isDark
+                                    ? styles.contentContainerDark
+                                    : styles.contentContainerLight
+                            ]}>
                                 <View style={styles.headerContainer}>
                                     <Text style={styles.title}>{t('auth.verifyScreen.title')}</Text>
                                     <Text style={styles.subtitle}>
@@ -251,14 +258,14 @@ export default function VerifyScreen() {
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
-                                        <ActivityIndicator color="#FFFFFF" />
+                                        <LdrHatch />
                                     ) : (
                                         <Text style={styles.buttonText}>{t('auth.verifyScreen.verifyCode')}</Text>
                                     )}
                                 </TouchableOpacity>
 
                                 {/* Go Back Button */}
-                                <View style={styles.backButtonContainer}>
+                                <View style={[styles.backButtonContainer, { marginTop: -5 }]}>
                                     <BackButton
                                         onPress={handleGoBack}
                                         text={t('auth.verifyScreen.goBack')}
@@ -276,7 +283,7 @@ export default function VerifyScreen() {
                                             disabled={resendLoading}
                                         >
                                             {resendLoading ? (
-                                                <ActivityIndicator size="small" color={COLORS.primary} />
+                                                <LdrHatch />
                                             ) : (
                                                 <Text style={styles.resendButton}>{t('auth.verifyScreen.resendCode')}</Text>
                                             )}
@@ -323,8 +330,10 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        justifyContent: 'space-between',
-        padding: 20,
+        justifyContent: 'flex-start',
+        paddingHorizontal: 20,
+        paddingTop: 90,
+        paddingBottom: 20,
     },
     logoContainer: {
         alignItems: 'center',
@@ -339,23 +348,27 @@ const styles = StyleSheet.create({
     contentContainer: {
         alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 100,
+        marginBottom: 50,
         borderRadius: 6,
         paddingVertical: 25,
         paddingHorizontal: 20,
+    },
+    contentContainerDark: {
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    contentContainerLight: {
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
     },
     headerContainer: {
         width: '100%',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 15,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#FFFFFF',
-        marginBottom: 10,
+        marginBottom: 8,
         textAlign: 'center',
     },
     subtitle: {
@@ -372,7 +385,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        marginBottom: 20,
+        marginBottom: 15,
         paddingHorizontal: 5,
     },
     otpInput: {
@@ -398,7 +411,7 @@ const styles = StyleSheet.create({
         borderWidth: 6,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 10,
     },
     verifyButton: {
         backgroundColor: COLORS.warning, // Yellow button
@@ -421,11 +434,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 15,
+        paddingHorizontal: 5,
     },
     resendText: {
         color: 'rgba(255, 255, 255, 0.8)',
         fontSize: 14,
+        marginRight: 4,
     },
     resendButton: {
         color: COLORS.primary,
@@ -439,7 +454,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 15,
     },
     footerText: {
         color: COLORS.white,

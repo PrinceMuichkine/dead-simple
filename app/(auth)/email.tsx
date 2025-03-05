@@ -12,8 +12,7 @@ import {
     Dimensions,
     ScrollView,
     Animated,
-    Linking,
-    ActivityIndicator
+    Linking
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/contexts/ThemeContext';
@@ -23,6 +22,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '@/components/ui/button-expand';
+import { LdrHatch } from '@/components/ui/ldrs';
 
 const { width, height } = Dimensions.get('window');
 
@@ -148,14 +148,14 @@ export default function EmailAuthScreen() {
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
-                                        <ActivityIndicator color="#FFFFFF" />
+                                        <LdrHatch />
                                     ) : (
                                         <Text style={styles.buttonText}>{t('auth.emailScreen.sendTheLink')}</Text>
                                     )}
                                 </TouchableOpacity>
 
                                 {/* Go Back Button */}
-                                <View style={styles.backButtonContainer}>
+                                <View style={[styles.backButtonContainer, { marginTop: -5 }]}>
                                     <BackButton
                                         onPress={handleGoBack}
                                         text={t('auth.emailScreen.goBack')}
@@ -201,8 +201,9 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         padding: 20,
+        paddingTop: 90,
     },
     logoContainer: {
         alignItems: 'center',
@@ -217,8 +218,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 100,
+        marginBottom: 50,
         borderRadius: 6,
         paddingVertical: 25,
         paddingHorizontal: 20,
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         width: '100%',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 15,
     },
     title: {
         fontSize: 24,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: '100%',
-        marginBottom: 20,
+        marginBottom: 15,
     },
     inputWrapper: {
         flexDirection: 'row',
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 10,
     },
     backButtonContainer: {
         width: '100%',
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 15,
     },
     footerText: {
         color: COLORS.white,

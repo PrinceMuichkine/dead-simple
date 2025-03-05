@@ -10,6 +10,7 @@ import { useColorScheme } from '@/components/builtin/useColorScheme';
 import { ThemeProvider } from '@/lib/contexts/ThemeContext';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { LanguageProvider } from '@/lib/contexts/LanguageContext';
+import { NotificationProvider } from '@/lib/contexts/NotificationContext';
 import '../lib/i18n';
 
 // Temporarily comment out this export due to TypeScript issues
@@ -58,14 +59,16 @@ function RootLayoutNav() {
     <ThemeProvider>
       <AuthProvider>
         <LanguageProvider>
-          <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-            </Stack>
-          </NavigationThemeProvider>
+          <NotificationProvider>
+            <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+              </Stack>
+            </NavigationThemeProvider>
+          </NotificationProvider>
         </LanguageProvider>
       </AuthProvider>
     </ThemeProvider>

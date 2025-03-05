@@ -1,0 +1,336 @@
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ImageBackground,
+    Dimensions,
+    ScrollView,
+    Animated,
+    Switch,
+    Platform
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '@/lib/contexts/ThemeContext';
+import { useRouter } from 'expo-router';
+import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
+import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
+import { LdrHatch } from '@/components/ui/ldrs';
+
+const { width, height } = Dimensions.get('window');
+
+export default function PreferencesScreen() {
+    const { t } = useTranslation();
+    const { isDark, toggleTheme } = useTheme();
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const fadeAnim = useState(new Animated.Value(0))[0];
+
+    // Preferences state
+    const [pushNotifications, setPushNotifications] = useState(true);
+    const [emailNotifications, setEmailNotifications] = useState(true);
+    const [dataUsage, setDataUsage] = useState(false);
+    const [darkMode, setDarkMode] = useState(isDark);
+
+    // Fade in animation for the elements
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+        }).start();
+    }, []);
+
+    const handleFinish = () => {
+        setIsLoading(true);
+        // In a real app, this would save preferences to the user's account
+        setTimeout(() => {
+            setIsLoading(false);
+            router.replace('/');
+        }, 1000);
+    };
+
+    const handleBack = () => {
+        router.back();
+    };
+
+    const handleToggleDarkMode = (value: boolean) => {
+        setDarkMode(value);
+        toggleTheme();
+    };
+
+    return (
+        <View style={globalStyles.container}>
+            <ImageBackground
+                source={require('../../assets/images/home.png')}
+                style={styles.backgroundImage}
+                resizeMode="cover"
+            >
+                <View style={styles.overlay}>
+                    <SafeAreaView style={styles.safeArea}>
+                        <ScrollView
+                            contentContainerStyle={styles.scrollContent}
+                            showsVerticalScrollIndicator={false}
+                        >
+                            <View style={styles.headerContainer}>
+                                <TouchableOpacity
+                                    style={styles.backButton}
+                                    onPress={handleBack}
+                                >
+                                    <Ionicons name="chevron-back" size={24} color={COLORS.white} />
+                                </TouchableOpacity>
+
+                                <Text style={styles.headerTitle}>
+                                    {t('onboarding.preferences.title', 'Your Preferences')}
+                                </Text>
+                            </View>
+
+                            <Animated.View
+                                style={[
+                                    styles.contentContainer,
+                                    { opacity: fadeAnim },
+                                    isDark
+                                        ? styles.contentContainerDark
+                                        : styles.contentContainerLight
+                                ]}
+                            >
+                                <Text style={styles.sectionTitle}>
+                                    {t('onboarding.preferences.customizeExperience', 'Customize Your Experience')}
+                                </Text>
+                                <Text style={styles.sectionDescription}>
+                                    {t('onboarding.preferences.settingsInfo', 'You can change these settings anytime in your profile')}
+                                </Text>
+
+                                <View style={styles.preferencesContainer}>
+                                    {/* Push Notifications */}
+                                    <View style={styles.preferenceItem}>
+                                        <View style={styles.preferenceInfo}>
+                                            <Ionicons name="notifications-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <View>
+                                                <Text style={styles.preferenceTitle}>
+                                                    {t('onboarding.preferences.pushNotifications', 'Push Notifications')}
+                                                </Text>
+                                                <Text style={styles.preferenceDescription}>
+                                                    {t('onboarding.preferences.pushNotificationsDesc', 'Receive alerts about transactions and activities')}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Switch
+                                            value={pushNotifications}
+                                            onValueChange={setPushNotifications}
+                                            trackColor={{ false: 'rgba(255, 255, 255, 0.3)', true: COLORS.primary }}
+                                            thumbColor={Platform.OS === 'ios' ? '#fff' : pushNotifications ? COLORS.white : '#f4f3f4'}
+                                            ios_backgroundColor="rgba(255, 255, 255, 0.3)"
+                                        />
+                                    </View>
+
+                                    {/* Email Notifications */}
+                                    <View style={styles.preferenceItem}>
+                                        <View style={styles.preferenceInfo}>
+                                            <Ionicons name="mail-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <View>
+                                                <Text style={styles.preferenceTitle}>
+                                                    {t('onboarding.preferences.emailNotifications', 'Email Notifications')}
+                                                </Text>
+                                                <Text style={styles.preferenceDescription}>
+                                                    {t('onboarding.preferences.emailNotificationsDesc', 'Receive email updates about your account')}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Switch
+                                            value={emailNotifications}
+                                            onValueChange={setEmailNotifications}
+                                            trackColor={{ false: 'rgba(255, 255, 255, 0.3)', true: COLORS.primary }}
+                                            thumbColor={Platform.OS === 'ios' ? '#fff' : emailNotifications ? COLORS.white : '#f4f3f4'}
+                                            ios_backgroundColor="rgba(255, 255, 255, 0.3)"
+                                        />
+                                    </View>
+
+                                    {/* Data Usage */}
+                                    <View style={styles.preferenceItem}>
+                                        <View style={styles.preferenceInfo}>
+                                            <Ionicons name="cellular-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <View>
+                                                <Text style={styles.preferenceTitle}>
+                                                    {t('onboarding.preferences.dataUsage', 'Optimize Data Usage')}
+                                                </Text>
+                                                <Text style={styles.preferenceDescription}>
+                                                    {t('onboarding.preferences.dataUsageDesc', 'Reduce data consumption when on cellular networks')}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Switch
+                                            value={dataUsage}
+                                            onValueChange={setDataUsage}
+                                            trackColor={{ false: 'rgba(255, 255, 255, 0.3)', true: COLORS.primary }}
+                                            thumbColor={Platform.OS === 'ios' ? '#fff' : dataUsage ? COLORS.white : '#f4f3f4'}
+                                            ios_backgroundColor="rgba(255, 255, 255, 0.3)"
+                                        />
+                                    </View>
+
+                                    {/* Dark Mode */}
+                                    <View style={styles.preferenceItem}>
+                                        <View style={styles.preferenceInfo}>
+                                            <Ionicons name="moon-outline" size={24} color={COLORS.white} style={styles.preferenceIcon} />
+                                            <View>
+                                                <Text style={styles.preferenceTitle}>
+                                                    {t('onboarding.preferences.darkMode', 'Dark Mode')}
+                                                </Text>
+                                                <Text style={styles.preferenceDescription}>
+                                                    {t('onboarding.preferences.darkModeDesc', 'Use dark theme for better visibility at night')}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Switch
+                                            value={darkMode}
+                                            onValueChange={handleToggleDarkMode}
+                                            trackColor={{ false: 'rgba(255, 255, 255, 0.3)', true: COLORS.primary }}
+                                            thumbColor={Platform.OS === 'ios' ? '#fff' : darkMode ? COLORS.white : '#f4f3f4'}
+                                            ios_backgroundColor="rgba(255, 255, 255, 0.3)"
+                                        />
+                                    </View>
+                                </View>
+
+                                <TouchableOpacity
+                                    style={[
+                                        styles.button,
+                                        isLoading && styles.buttonDisabled
+                                    ]}
+                                    onPress={handleFinish}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <LdrHatch />
+                                    ) : (
+                                        <Text style={styles.buttonText}>
+                                            {t('onboarding.preferences.finish', 'Finish Setup')}
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+                            </Animated.View>
+                        </ScrollView>
+                    </SafeAreaView>
+                </View>
+            </ImageBackground>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    },
+    safeArea: {
+        flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        padding: 20,
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        position: 'relative',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 0,
+        zIndex: 10,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: COLORS.white,
+        textAlign: 'center',
+    },
+    contentContainer: {
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 20,
+        marginBottom: 40,
+        borderRadius: 6,
+        paddingVertical: 25,
+        paddingHorizontal: 20,
+    },
+    contentContainerDark: {
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    contentContainerLight: {
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: COLORS.white,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    sectionDescription: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.8)',
+        textAlign: 'center',
+        marginBottom: 30,
+    },
+    preferencesContainer: {
+        width: '100%',
+        marginBottom: 30,
+    },
+    preferenceItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+        paddingBottom: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(255, 255, 255, 0.2)',
+    },
+    preferenceInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        marginRight: 10,
+    },
+    preferenceIcon: {
+        marginRight: 15,
+    },
+    preferenceTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: COLORS.white,
+        marginBottom: 4,
+    },
+    preferenceDescription: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.7)',
+        maxWidth: '90%',
+    },
+    button: {
+        width: '100%',
+        height: 54,
+        backgroundColor: COLORS.primary,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: COLORS.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonDisabled: {
+        opacity: 0.7,
+    },
+    buttonText: {
+        color: COLORS.white,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+}); 
