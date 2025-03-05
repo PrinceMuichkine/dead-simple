@@ -15,13 +15,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
-import { supabase } from '../../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 const { width } = Dimensions.get('window');
 
@@ -224,7 +224,7 @@ export default function OnboardingScreen() {
                     {/* Step 1: Basic Information */}
                     <View style={styles.slide}>
                         <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#333333' }]}>
-                            Let's get to know you
+                            Let&apos;s get to know you
                         </Text>
 
                         <Text style={[styles.label, { color: isDark ? '#DDDDDD' : '#555555' }]}>
@@ -383,7 +383,7 @@ export default function OnboardingScreen() {
                     {/* Step 3: Store Information (Merchant only) */}
                     <View style={styles.slide}>
                         <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#333333' }]}>
-                            Let's set up your store
+                            Let&apos;s set up your store
                         </Text>
 
                         <Text style={[styles.label, { color: isDark ? '#DDDDDD' : '#555555' }]}>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full">
+    <defs>
+        <linearGradient id="105553200276384140306919974224" x1="17.327438%" x2="80.566780%" y1="89.843849%" y2="11.846760%">
+            <stop offset="0%" style="stop-color:#0c0c0c;stop-opacity:1.000000"></stop>
+            <stop offset="11%" style="stop-color:#000000;stop-opacity:1.000000"></stop>
+            <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1.000000"></stop>
+        </linearGradient>
+        <linearGradient id="105553200281264140306920280848" x1="0.000000%" x2="99.447517%" y1="63.688320%" y2="63.688320%">
+            <stop offset="0%" style="stop-color:#0f0e0e;stop-opacity:1.000000"></stop>
+            <stop offset="11%" style="stop-color:#000000;stop-opacity:1.000000"></stop>
+            <stop offset="100%" style="stop-color:#060506;stop-opacity:1.000000"></stop>
+        </linearGradient>
+        <linearGradient id="105553200280544140306920397216" x1="-28.217447%" x2="112.096512%" y1="47.994041%" y2="78.343124%">
+            <stop offset="0%" style="stop-color:#17181b;stop-opacity:1.000000"></stop>
+            <stop offset="10%" style="stop-color:#000000;stop-opacity:1.000000"></stop>
+            <stop offset="89%" style="stop-color:#000000;stop-opacity:1.000000"></stop>
+            <stop offset="100%" style="stop-color:#121014;stop-opacity:1.000000"></stop>
+        </linearGradient>
+    </defs>
+    <g transform="scale(1,-1) translate(0,-500)">
+        <path d="M 21.267779 55.101435 C 66.061843 55.101435 63.990353 2.826188 30.167007 1.045983 C -2.743929 -0.686199 -10.655195 47.047144 21.267779 55.101435 Z" transform="scale(1.000000,1.000000) translate(216.207381,307.953565)" fill="url(#105553200276384140306919974224)" opacity="1.000000"></path>
+        <path d="M 1.000000 190.194082 C 147.857622 190.194082 135.721611 42.093360 89.333085 1.000000 C 89.333085 9.815271 90.914764 17.538521 91.310692 25.061268 C 92.696437 51.390865 85.068405 83.303750 68.106769 104.034997 C 39.939869 138.461745 1.000000 139.233676 1.000000 190.194082 Z" transform="scale(1.000000,1.000000) translate(125.070000,135.945000)" fill="url(#105553200281264140306920280848)" opacity="1.000000"></path>
+        <path d="M 100.539522 206.015190 L 124.270798 206.015190 C 124.270798 205.530206 124.193110 205.763273 124.930000 205.355977 C 124.930000 158.014995 92.882044 152.964737 69.029628 123.811342 C 47.517319 97.518062 55.420204 57.956076 24.731277 20.446778 C 18.299481 12.585567 9.689562 7.821018 1.000000 1.000000 C 24.635540 49.590274 7.280413 77.151339 9.569628 120.647129 C 12.052340 167.819421 51.389198 205.355977 100.539522 206.015190 Z" transform="scale(1.000000,1.000000) translate(249.000000,139.900277)" fill="url(#105553200280544140306920397216)" opacity="1.000000"></path>
+    </g>
+</svg>

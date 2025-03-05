@@ -1,8 +1,15 @@
-import { supabase } from '../supabase/client';
-import { StorageOptions } from '../types/storage.types';
+import { supabase } from '@/lib/supabase/client';
+import { StorageOptions } from '@/lib/types/storage.types';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
+
+// Define a more specific error type instead of using 'any'
+type StorageError = {
+  message: string;
+  status?: number;
+  details?: unknown;
+};
 
 /**
  * Upload a file to Supabase Storage
@@ -10,12 +17,12 @@ import { decode } from 'base64-arraybuffer';
 export const uploadFile = async (
   uri: string,
   options: StorageOptions
-): Promise<{ success: boolean; url?: string; error?: any }> => {
+): Promise<{ success: boolean; url?: string; error?: StorageError }> => {
   try {
     // Get file info
     const fileInfo = await FileSystem.getInfoAsync(uri);
     if (!fileInfo.exists) {
-      return { success: false, error: 'File does not exist' };
+      return { success: false, error: { message: 'File does not exist' } };
     }
 
     // Get file extension
@@ -47,7 +54,12 @@ export const uploadFile = async (
 
     if (error) {
       console.error('Error uploading file:', error);
-      return { success: false, error };
+      return { 
+        success: false, 
+        error: error instanceof Error 
+          ? { message: error.message } 
+          : { message: 'Unknown error during file upload' }
+      };
     }
 
     // Get public URL
@@ -57,8 +69,13 @@ export const uploadFile = async (
 
     return { success: true, url: publicUrl };
   } catch (error) {
-    console.error('Error in uploadFile:', error);
-    return { success: false, error };
+    console.error('Error uploading file:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error 
+        ? { message: error.message } 
+        : { message: 'Unknown error during file upload' }
+    };
   }
 };
 
@@ -68,7 +85,7 @@ export const uploadFile = async (
 export const deleteFile = async (
   bucket: StorageOptions['bucket'],
   path: string
-): Promise<{ success: boolean; error?: any }> => {
+): Promise<{ success: boolean; error?: StorageError }> => {
   try {
     const { error } = await supabase.storage
       .from(bucket)
@@ -76,27 +93,37 @@ export const deleteFile = async (
 
     if (error) {
       console.error('Error deleting file:', error);
-      return { success: false, error };
+      return { 
+        success: false, 
+        error: error instanceof Error 
+          ? { message: error.message } 
+          : { message: 'Unknown error during file deletion' }
+      };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('Error in deleteFile:', error);
-    return { success: false, error };
+    console.error('Error deleting file:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error 
+        ? { message: error.message } 
+        : { message: 'Unknown error during file deletion' }
+    };
   }
 };
 
 /**
  * Pick an image from the device library
  */
-export const pickImage = async (): Promise<{ success: boolean; uri?: string; error?: any }> => {
+export const pickImage = async (): Promise<{ success: boolean; uri?: string; error?: StorageError }> => {
   try {
     // Request permission
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       return { 
         success: false, 
-        error: 'Permission to access media library was denied' 
+        error: { message: 'Permission to access media library was denied' } 
       };
     }
 
@@ -109,27 +136,32 @@ export const pickImage = async (): Promise<{ success: boolean; uri?: string; err
     });
 
     if (result.canceled) {
-      return { success: false, error: 'Image picking was cancelled' };
+      return { success: false, error: { message: 'Image picking was cancelled' } };
     }
 
     return { success: true, uri: result.assets[0].uri };
   } catch (error) {
     console.error('Error picking image:', error);
-    return { success: false, error };
+    return { 
+      success: false, 
+      error: error instanceof Error 
+        ? { message: error.message } 
+        : { message: 'Unknown error during image selection' }
+    };
   }
 };
 
 /**
  * Take a photo with the device camera
  */
-export const takePhoto = async (): Promise<{ success: boolean; uri?: string; error?: any }> => {
+export const takePhoto = async (): Promise<{ success: boolean; uri?: string; error?: StorageError }> => {
   try {
     // Request permission
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       return { 
         success: false, 
-        error: 'Permission to access camera was denied' 
+        error: { message: 'Permission to access camera was denied' } 
       };
     }
 
@@ -142,13 +174,18 @@ export const takePhoto = async (): Promise<{ success: boolean; uri?: string; err
     });
 
     if (result.canceled) {
-      return { success: false, error: 'Photo taking was cancelled' };
+      return { success: false, error: { message: 'Photo taking was cancelled' } };
     }
 
     return { success: true, uri: result.assets[0].uri };
   } catch (error) {
     console.error('Error taking photo:', error);
-    return { success: false, error };
+    return { 
+      success: false, 
+      error: error instanceof Error 
+        ? { message: error.message } 
+        : { message: 'Unknown error during photo capture' }
+    };
   }
 };
 
@@ -158,7 +195,7 @@ export const takePhoto = async (): Promise<{ success: boolean; uri?: string; err
 export const uploadAvatar = async (
   uri: string,
   userId: string
-): Promise<{ success: boolean; url?: string; error?: any }> => {
+): Promise<{ success: boolean; url?: string; error?: StorageError }> => {
   const path = `${userId}/avatar.${uri.split('.').pop()?.toLowerCase() || 'jpg'}`;
   
   return uploadFile(uri, {
@@ -174,7 +211,7 @@ export const uploadAvatar = async (
 export const uploadLogo = async (
   uri: string,
   organizationId: string
-): Promise<{ success: boolean; url?: string; error?: any }> => {
+): Promise<{ success: boolean; url?: string; error?: StorageError }> => {
   const path = `${organizationId}/logo.${uri.split('.').pop()?.toLowerCase() || 'jpg'}`;
   
   return uploadFile(uri, {
@@ -191,7 +228,7 @@ export const uploadProductImage = async (
   uri: string,
   productId: string,
   index: number = 0
-): Promise<{ success: boolean; url?: string; error?: any }> => {
+): Promise<{ success: boolean; url?: string; error?: StorageError }> => {
   const path = `${productId}/image_${index}.${uri.split('.').pop()?.toLowerCase() || 'jpg'}`;
   
   return uploadFile(uri, {
@@ -207,7 +244,7 @@ export const uploadProductImage = async (
 export const uploadProductImages = async (
   uris: string[],
   productId: string
-): Promise<{ success: boolean; urls?: string[]; error?: any }> => {
+): Promise<{ success: boolean; urls?: string[]; error?: StorageError }> => {
   try {
     const results = await Promise.all(
       uris.map((uri, index) => uploadProductImage(uri, productId, index))
@@ -225,6 +262,11 @@ export const uploadProductImages = async (
     return { success: true, urls };
   } catch (error) {
     console.error('Error uploading product images:', error);
-    return { success: false, error };
+    return { 
+      success: false, 
+      error: error instanceof Error 
+        ? { message: error.message } 
+        : { message: 'Unknown error during product images upload' }
+    };
   }
 }; 

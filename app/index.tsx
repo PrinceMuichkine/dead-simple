@@ -8,20 +8,26 @@ import {
     Platform,
     Dimensions,
     ActivityIndicator,
-    FlatList,
+    ImageBackground,
+    KeyboardAvoidingView,
+    ScrollView,
     Animated,
+    Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { Ionicons as IoniconsType } from '@expo/vector-icons/build/Icons';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signInWithOAuth } from '../lib/supabase/client';
-import { getAsset } from '../lib/utils/assetUtils';
+import { signInWithOAuth } from '@/lib/supabase/client';
+import { getAsset } from '@/lib/utils/assetUtils';
+import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
+import PhoneNumberInput from '@/components/ui/phone-number-input';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+type UserType = 'merchant' | 'shopper';
 
 // Carousel images
 const carouselItems = [
@@ -49,396 +55,333 @@ export default function HomeScreen() {
     const router = useRouter();
     const { user, isLoading } = useAuth();
     const { isDark } = useTheme();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const scrollX = useRef(new Animated.Value(0)).current;
-    const flatListRef = useRef<FlatList>(null);
+    const [phone, setPhone] = useState('');
     const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const [userType, setUserType] = useState<UserType>('merchant');
+
+    // Fade in animation for the logo
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Start animation when component mounts
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     // Social auth feature flags
     const enableSocialAuth = process.env.EXPO_PUBLIC_ENABLE_SOCIAL_AUTH === 'true';
     const enableAppleAuth = process.env.EXPO_PUBLIC_ENABLE_APPLE_AUTH === 'true' && enableSocialAuth;
     const enableGoogleAuth = process.env.EXPO_PUBLIC_ENABLE_GOOGLE_AUTH === 'true' && enableSocialAuth;
 
-    useEffect(() => {
-        // Redirect if already authenticated
-        if (!isLoading && user) {
-            if (user.userType === 'merchant') {
-                if (user.storeId) {
-                    router.replace('/merchant/dashboard');
-                } else {
-                    router.replace('/merchant/onboarding');
-                }
-            } else if (user.userType === 'customer') {
-                router.replace('/browse');
-            }
-        }
-    }, [user, isLoading, router]);
-
+    // Handle social authentication
     const handleSocialAuth = async (provider: 'google' | 'apple') => {
-        try {
-            setIsAuthLoading(true);
-            const result = await signInWithOAuth(provider);
+        if (isAuthLoading) return;
 
-            if (result.success) {
-                // User will be redirected to the app after authentication
-                // The session will be handled by Supabase Auth
-            } else {
-                console.error('Authentication failed:', result.error);
+        setIsAuthLoading(true);
+        try {
+            const result = await signInWithOAuth(provider);
+            if (!result.success) {
+                console.error(`${provider} auth failed:`, result.error);
+                // Show error to user
             }
         } catch (error) {
-            console.error('Auth error:', error);
+            console.error(`${provider} auth error:`, error);
+            // Show error to user
         } finally {
             setIsAuthLoading(false);
         }
     };
 
+    // Handle phone authentication
     const handlePhoneAuth = () => {
-        router.push('/auth/register');
+        if (!phone || phone.length < 10 || isAuthLoading) return;
+
+        router.push({
+            pathname: '/auth/verify',
+            params: { phone, userType }
+        });
     };
 
-    const handleLogin = () => {
-        router.push('/auth/login');
+    // Handle email authentication
+    const handleEmailAuth = () => {
+        router.push({
+            pathname: '/auth/email',
+            params: { userType }
+        });
     };
 
-    // Auto scroll for carousel
-    useEffect(() => {
-        const timer = setInterval(() => {
-            if (currentIndex < carouselItems.length - 1) {
-                flatListRef.current?.scrollToIndex({
-                    index: currentIndex + 1,
-                    animated: true,
-                });
-            } else {
-                flatListRef.current?.scrollToIndex({
-                    index: 0,
-                    animated: true,
-                });
-            }
-        }, 5000);
-
-        return () => clearInterval(timer);
-    }, [currentIndex]);
+    // Toggle user type between merchant and shopper
+    const toggleUserType = (type: UserType) => {
+        setUserType(type);
+    };
 
     if (isLoading) {
         return (
-            <View style={[styles.container, isDark ? styles.darkBackground : styles.lightBackground]}>
-                <ActivityIndicator size="large" color={isDark ? '#FFFFFF' : '#000000'} />
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={COLORS.white} />
             </View>
         );
     }
 
     return (
-        <SafeAreaView style={[styles.container, isDark ? styles.darkBackground : styles.lightBackground]}>
-            <StatusBar style={isDark ? 'light' : 'dark'} />
+        <KeyboardAvoidingView
+            style={globalStyles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <StatusBar style="light" />
 
-            {/* Logo and Header */}
-            <View style={styles.header}>
-                <Image
-                    source={getAsset('logo')}
-                    style={styles.logo}
-                    resizeMode="contain"
-                />
-                <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-                    <Text style={[styles.loginText, isDark ? styles.darkText : styles.lightText]}>
-                        Login
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Carousel */}
-            <View style={styles.carouselContainer}>
-                <FlatList
-                    ref={flatListRef}
-                    data={carouselItems}
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                        { useNativeDriver: false }
-                    )}
-                    onMomentumScrollEnd={(event) => {
-                        const index = Math.floor(
-                            Math.floor(event.nativeEvent.contentOffset.x) /
-                            Math.floor(event.nativeEvent.layoutMeasurement.width)
-                        );
-                        setCurrentIndex(index);
-                    }}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <View style={styles.carouselItem}>
-                            <Image source={item.image} style={styles.carouselImage} />
-                            <View style={styles.carouselTextContainer}>
-                                <Text style={[styles.carouselTitle, isDark ? styles.darkText : styles.lightText]}>
-                                    {item.title}
-                                </Text>
-                                <Text style={[styles.carouselDescription, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
-                                    {item.description}
-                                </Text>
+            <ImageBackground
+                source={getAsset('home-bg')}
+                style={styles.backgroundImage}
+                resizeMode="cover"
+            >
+                <View style={styles.overlay}>
+                    <SafeAreaView style={styles.container}>
+                        <ScrollView
+                            contentContainerStyle={styles.scrollContent}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            <View style={styles.logoContainer}>
+                                <Image
+                                    source={getAsset('jumbo-white')}
+                                    style={styles.logo}
+                                    resizeMode="contain"
+                                />
                             </View>
-                        </View>
-                    )}
-                />
 
-                {/* Pagination Dots */}
-                <View style={styles.paginationContainer}>
-                    {carouselItems.map((_, index) => {
-                        const inputRange = [
-                            (index - 1) * width,
-                            index * width,
-                            (index + 1) * width,
-                        ];
+                            <View style={[
+                                styles.contentContainer,
+                                isDark
+                                    ? styles.contentContainerDark
+                                    : styles.contentContainerLight
+                            ]}>
+                                {/* Phone Input Section */}
+                                <View style={styles.phoneInputContainer}>
+                                    <PhoneNumberInput
+                                        value={phone}
+                                        onChange={(value) => setPhone(value || '')}
+                                    />
+                                    <TouchableOpacity
+                                        style={[styles.socialButton, styles.phoneButton]}
+                                        onPress={handlePhoneAuth}
+                                    >
+                                        <Text style={styles.socialButtonText}>Continue with Phone</Text>
+                                    </TouchableOpacity>
+                                </View>
 
-                        const dotWidth = scrollX.interpolate({
-                            inputRange,
-                            outputRange: [10, 20, 10],
-                            extrapolate: 'clamp',
-                        });
+                                {/* Divider */}
+                                <View style={styles.dividerContainer}>
+                                    <View style={styles.divider} />
+                                    <Text style={styles.dividerText}>OR</Text>
+                                    <View style={styles.divider} />
+                                </View>
 
-                        const opacity = scrollX.interpolate({
-                            inputRange,
-                            outputRange: [0.3, 1, 0.3],
-                            extrapolate: 'clamp',
-                        });
+                                {/* Social Authentication Buttons */}
+                                <View style={styles.socialButtonsContainer}>
+                                    {/* Email button first */}
+                                    <TouchableOpacity
+                                        style={[styles.socialButton, styles.emailButton]}
+                                        onPress={handleEmailAuth}
+                                        disabled={isAuthLoading}
+                                    >
+                                        <View style={styles.socialIconContainer}>
+                                            <FontAwesome name="envelope" size={20} color="white" />
+                                        </View>
+                                        <Text style={styles.socialButtonText}>
+                                            Continue with Email
+                                        </Text>
+                                    </TouchableOpacity>
 
-                        return (
-                            <Animated.View
-                                key={index}
-                                style={[
-                                    styles.paginationDot,
-                                    isDark ? styles.darkDot : styles.lightDot,
-                                    {
-                                        width: dotWidth,
-                                        opacity,
-                                    },
-                                ]}
-                            />
-                        );
-                    })}
+                                    {/* Google button second */}
+                                    {enableGoogleAuth && (
+                                        <TouchableOpacity
+                                            style={[styles.socialButton, styles.googleButton]}
+                                            onPress={() => handleSocialAuth('google')}
+                                            disabled={isAuthLoading}
+                                        >
+                                            <View style={styles.socialIconContainer}>
+                                                <FontAwesome name="google" size={20} color="white" />
+                                            </View>
+                                            <Text style={styles.socialButtonText}>
+                                                Continue with Google
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+
+                                    {/* Apple button third */}
+                                    {enableAppleAuth && (
+                                        <TouchableOpacity
+                                            style={[styles.socialButton, styles.appleButton]}
+                                            onPress={() => handleSocialAuth('apple')}
+                                            disabled={isAuthLoading}
+                                        >
+                                            <View style={styles.socialIconContainer}>
+                                                <FontAwesome name="apple" size={24} color="white" />
+                                            </View>
+                                            <Text style={styles.socialButtonText}>
+                                                Continue with Apple
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+
+                                {/* Footer */}
+                                <View style={styles.footer}>
+                                    <Text style={styles.footerText}>
+                                        By continuing, you agree to our
+                                    </Text>
+                                    <View style={styles.footerLinks}>
+                                        <TouchableOpacity onPress={() => Linking.openURL('https://lomi.africa/terms')}>
+                                            <Text style={styles.footerLink}>Terms of Service</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.footerText}> and </Text>
+                                        <TouchableOpacity onPress={() => Linking.openURL('https://lomi.africa/privacy')}>
+                                            <Text style={styles.footerLink}>Privacy Policy</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </ScrollView>
+                    </SafeAreaView>
                 </View>
-            </View>
-
-            {/* Authentication Options */}
-            <View style={styles.authContainer}>
-                <Text style={[styles.authTitle, isDark ? styles.darkText : styles.lightText]}>
-                    Get Started
-                </Text>
-
-                <TouchableOpacity
-                    style={[styles.authButton, styles.phoneButton]}
-                    onPress={handlePhoneAuth}
-                    disabled={isAuthLoading}
-                >
-                    {isAuthLoading ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" />
-                    ) : (
-                        <>
-                            <Ionicons name="phone-portrait-outline" size={24} color="#FFFFFF" />
-                            <Text style={styles.authButtonText}>Continue with Phone</Text>
-                        </>
-                    )}
-                </TouchableOpacity>
-
-                {enableGoogleAuth && (
-                    <TouchableOpacity
-                        style={[styles.authButton, styles.googleButton]}
-                        onPress={() => handleSocialAuth('google')}
-                        disabled={isAuthLoading}
-                    >
-                        <FontAwesome name="google" size={24} color="#FFFFFF" />
-                        <Text style={styles.authButtonText}>Continue with Google</Text>
-                    </TouchableOpacity>
-                )}
-
-                {Platform.OS === 'ios' && enableAppleAuth && (
-                    <TouchableOpacity
-                        style={[styles.authButton, styles.appleButton]}
-                        onPress={() => handleSocialAuth('apple')}
-                        disabled={isAuthLoading}
-                    >
-                        <FontAwesome name="apple" size={24} color="#FFFFFF" />
-                        <Text style={styles.authButtonText}>Continue with Apple</Text>
-                    </TouchableOpacity>
-                )}
-
-                <View style={styles.termsContainer}>
-                    <Text style={[styles.termsText, isDark ? styles.darkText : styles.lightText]}>
-                        By continuing, you agree to our{' '}
-                        <Text style={[styles.termsLink, isDark ? styles.darkText : styles.lightText]}>Terms of Service</Text> and{' '}
-                        <Text style={[styles.termsLink, isDark ? styles.darkText : styles.lightText]}>Privacy Policy</Text>
-                    </Text>
-                </View>
-            </View>
-        </SafeAreaView>
-    );
-}
-
-// Feature item component for highlighting key features
-interface FeatureItemProps {
-    icon: keyof typeof IoniconsType.glyphMap;
-    text: string;
-    isDark: boolean;
-}
-
-// Prefix with underscore to indicate it's not used currently but kept for future use
-// eslint-disable-next-line no-unused-vars
-function _FeatureItem({ icon, text, isDark }: FeatureItemProps) {
-    return (
-        <View style={[styles.featureItem, isDark ? styles.darkBackground : styles.lightBackground]}>
-            <Ionicons name={icon} size={24} color="#FF9500" />
-            <Text style={[styles.featureText, isDark ? styles.darkText : styles.lightText]}>
-                {text}
-            </Text>
-        </View>
+            </ImageBackground>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLORS.black,
+    },
+    backgroundImage: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: COLORS.transparentOverlay,
+    },
     container: {
         flex: 1,
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    scrollContent: {
+        flexGrow: 1,
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        padding: 20,
     },
-    logo: {
-        width: 100,
-        height: 40,
-    },
-    loginButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-    },
-    loginText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    carouselContainer: {
-        height: 300,
+    logoContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 40,
         marginBottom: 20,
     },
-    carouselItem: {
-        width,
-        height: 280,
+    logo: {
+        width: width * 0.6,
+        height: 100,
+    },
+    contentContainer: {
         alignItems: 'center',
-    },
-    carouselImage: {
-        width: width * 0.9,
-        height: 200,
-        borderRadius: 20,
-    },
-    carouselTextContainer: {
-        marginTop: 16,
+        width: '100%',
+        marginBottom: 100,
+        borderRadius: 6,
+        paddingVertical: 25,
         paddingHorizontal: 20,
+    },
+    contentContainerDark: {
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    contentContainerLight: {
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    },
+    phoneInputContainer: {
+        width: '100%',
+        flexDirection: 'column',
+        marginBottom: 20,
+        marginTop: 15,
+    },
+    phoneButton: {
+        marginTop: 12,
+        marginBottom: -12,
+        width: '100%',
+        backgroundColor: COLORS.warning,
+        height: 54,
+    },
+    dividerContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
+        marginVertical: 20,
+        width: '100%',
     },
-    carouselTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        textAlign: 'center',
+    divider: {
+        flex: 1,
+        height: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
     },
-    carouselDescription: {
+    dividerText: {
+        color: COLORS.white,
+        paddingHorizontal: 15,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    socialButtonsContainer: {
+        width: '100%',
+        marginBottom: 20,
+    },
+    socialButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        paddingVertical: 15,
+        marginBottom: 12,
+        width: '100%',
+        height: 54,
+    },
+    socialIconContainer: {
+        position: 'absolute',
+        left: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 24,
+    },
+    emailButton: {
+        backgroundColor: COLORS.primary,
+    },
+    googleButton: {
+        backgroundColor: COLORS.danger,
+    },
+    appleButton: {
+        backgroundColor: COLORS.black,
+    },
+    socialButtonText: {
+        color: COLORS.white,
+        fontWeight: '600',
         fontSize: 16,
         textAlign: 'center',
     },
-    paginationContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
+    footer: {
         alignItems: 'center',
         marginTop: 10,
     },
-    paginationDot: {
-        height: 10,
-        borderRadius: 5,
-        marginHorizontal: 4,
+    footerText: {
+        color: COLORS.white,
+        fontSize: 12,
     },
-    authContainer: {
-        flex: 1,
-        paddingHorizontal: 20,
-        paddingTop: 20,
-    },
-    authTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    authButton: {
+    footerLinks: {
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 16,
-        borderRadius: 10,
-        marginBottom: 16,
+        marginTop: 5,
     },
-    phoneButton: {
-        backgroundColor: '#FF9500',
-    },
-    googleButton: {
-        backgroundColor: '#DB4437',
-    },
-    appleButton: {
-        backgroundColor: '#000000',
-    },
-    authButtonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
+    footerLink: {
+        color: COLORS.primary,
+        fontSize: 12,
         fontWeight: '600',
-        marginLeft: 10,
-    },
-    termsContainer: {
-        marginTop: 20,
-    },
-    termsText: {
-        fontSize: 14,
-        textAlign: 'center',
-    },
-    termsLink: {
-        color: '#FF9500',
-        fontWeight: '600',
-    },
-    featureItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        borderRadius: 10,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    featureText: {
-        fontSize: 16,
-        marginLeft: 16,
-    },
-    darkBackground: {
-        backgroundColor: '#121212',
-    },
-    lightBackground: {
-        backgroundColor: '#F5F5F5',
-    },
-    darkText: {
-        color: '#FFFFFF',
-    },
-    lightText: {
-        color: '#333333',
-    },
-    darkSecondaryText: {
-        color: '#CCCCCC',
-    },
-    lightSecondaryText: {
-        color: '#666666',
-    },
-    darkDot: {
-        backgroundColor: '#FFFFFF',
-    },
-    lightDot: {
-        backgroundColor: '#333333',
+        marginHorizontal: 5,
     },
 }); 

@@ -3,9 +3,9 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack } from 'expo-router';
-import { ThemeProvider } from '../contexts/ThemeContext';
-import { AuthProvider } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import 'react-native-reanimated';
 
 export default function RootLayout() {
@@ -43,18 +43,6 @@ function RootLayoutNav() {
             }}
         >
             <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen
-                name="auth/login"
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen
-                name="auth/register"
-                options={{
-                    headerShown: false,
-                }}
-            />
             <Stack.Screen
                 name="auth/verify"
                 options={{

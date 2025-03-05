@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 // Define our user types
@@ -26,6 +26,7 @@ interface AuthContextType {
     signOut: () => Promise<void>;
     refreshSession: () => Promise<void>;
     updateUserData: (data: Partial<AuthUser>) => void;
+    updateSession: (newSession: Session | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -171,6 +172,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     };
 
+    // Update session directly
+    const updateSession = (newSession: Session | null) => {
+        setSession(newSession);
+    };
+
     const value = {
         user,
         session,
@@ -180,6 +186,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         signOut,
         refreshSession,
         updateUserData,
+        updateSession,
     };
 
     return (

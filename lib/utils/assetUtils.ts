@@ -1,34 +1,43 @@
 import { Platform } from 'react-native';
 
-// Default placeholder images
-const placeholderImage = require('../../assets/icon.png');
-
-// Assets maps for web and native platforms
-// This is a static object with all assets we need in the app
-const assetMap = {
-  // Use placeholder for missing images
-  'onboarding-1': placeholderImage,
-  'onboarding-2': placeholderImage,
-  'onboarding-3': placeholderImage,
-  'logo': placeholderImage,
-  // Add actual assets as they become available
-  'icon': require('../../assets/icon.png'),
-  'favicon': require('../../assets/favicon.png'),
-  'adaptive-icon': require('../../assets/adaptive-icon.png'),
-  'splash-icon': require('../../assets/splash-icon.png'),
-};
+// Define a specific type for assets
+type AssetType = string | number | { uri: string } | ReturnType<typeof require>;
 
 /**
- * Get asset source in a cross-platform compatible way
- * @param name Asset name without path or extension
- * @returns Asset source that can be used in Image component
+ * Utility function to get assets in a way that works across platforms
+ * @param name The name of the asset
+ * @returns The asset reference or null if not found
  */
 export function getAsset(name: string) {
-  // For all platforms, use the pre-defined map
-  if (!assetMap[name as keyof typeof assetMap]) {
-    console.warn(`Asset "${name}" not found in assets map, using placeholder`);
-    return placeholderImage;
+  if (!name) {
+    console.warn('Asset name is required');
+    return null;
+  }
+
+  // Assets maps for web and native platforms
+  // This is a static object with all assets we need in the app
+  const assetMap: Record<string, AssetType> = {
+    // Use placeholders for missing assets
+    'onboarding-1': require('@/assets/jumbo_app.svg'),
+    'onboarding-2': require('@/assets/jumbo_app.svg'),
+    'onboarding-3': require('@/assets/jumbo_app.svg'),
+    'logo': require('@/assets/jumbo_app.svg'),
+    // Add actual assets that exist
+    'icon': require('@/assets/jumbo_app.svg'),
+    // Add new assets for the updated UI
+    'home-bg': require('@/assets/images/home.png'),
+    'jumbo-white': require('@/assets/jumbo_white.svg'),
+    'jumbo-black': require('@/assets/jumbo_black.svg'),
+    'jumbo-app': require('@/assets/jumbo_app.svg'),
+  };
+
+  // Get the asset from the map
+  const asset = assetMap[name];
+  
+  if (!asset) {
+    console.warn(`Asset '${name}' not found`);
+    return assetMap['jumbo-app']; // Return default asset as fallback
   }
   
-  return assetMap[name as keyof typeof assetMap];
+  return asset;
 } 
