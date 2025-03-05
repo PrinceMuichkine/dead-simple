@@ -13,11 +13,10 @@ import {
     Keyboard
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import useRouter from 'expo-router';
-import useLocalSearchParams from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase/client';
 
 export default function VerifyScreen() {
     const router = useRouter();

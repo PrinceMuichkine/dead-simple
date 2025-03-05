@@ -1,16 +1,25 @@
 import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack } from 'expo-router';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import 'react-native-reanimated';
 
 export default function RootLayout() {
     return (
-        <ThemeProvider>
-            <AuthProvider>
-                <RootLayoutNav />
-            </AuthProvider>
-        </ThemeProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+                <ThemeProvider>
+                    <AuthProvider>
+                        <StatusBar style="auto" />
+                        <RootLayoutNav />
+                    </AuthProvider>
+                </ThemeProvider>
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }
 
@@ -30,6 +39,7 @@ function RootLayoutNav() {
                 contentStyle: {
                     backgroundColor: isDark ? '#121212' : '#F5F5F5',
                 },
+                headerShadowVisible: false,
             }}
         >
             <Stack.Screen name="index" options={{ headerShown: false }} />

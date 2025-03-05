@@ -12,13 +12,11 @@ import {
     Alert
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import useRouter from 'expo-router';
-import useLocalSearchParams from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-import Controller from 'react-hook-form';
-import useForm from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const phoneSchema = z.string()
@@ -174,7 +172,9 @@ export default function RegisterScreen() {
                                 message: 'Please enter a valid phone number'
                             }
                         }}
-                        render={({ field: { onChange, onBlur, value } }) => (
+                        render={({ field: { onChange, onBlur, value } }: {
+                            field: { onChange: (text: string) => void; onBlur: () => void; value: string }
+                        }) => (
                             <TextInput
                                 style={[
                                     styles.input,
