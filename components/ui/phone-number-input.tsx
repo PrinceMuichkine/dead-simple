@@ -15,6 +15,7 @@ import { COLORS } from "@/lib/styles/globalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/lib/contexts/ThemeContext";
 import { CountryData, COUNTRIES } from "@/lib/data/onboarding";
+import { useTranslation } from "react-i18next";
 
 // Remove the fixed width and use the dynamic window dimensions
 // const { width } = Dimensions.get("window");
@@ -25,6 +26,7 @@ interface PhoneNumberInputProps {
 }
 
 export default function PhoneNumberInput({ value, onChange }: PhoneNumberInputProps) {
+    const { t } = useTranslation();
     // Use useWindowDimensions hook to dynamically get screen dimensions
     const { width, height } = useWindowDimensions();
     const [country, setCountry] = useState<CountryData>(COUNTRIES.find(c => c.code === "CI") || COUNTRIES[0]);
@@ -131,7 +133,7 @@ export default function PhoneNumberInput({ value, onChange }: PhoneNumberInputPr
                                 color: COLORS.black
                             }
                     ]}
-                    placeholder="Phone number"
+                    placeholder={t('phoneInput.placeholder')}
                     placeholderTextColor={isDark ? "#AAAAAA" : "#666666"}
                     keyboardType="phone-pad"
                     value={value}
@@ -156,7 +158,7 @@ export default function PhoneNumberInput({ value, onChange }: PhoneNumberInputPr
                         ]}
                     >
                         <View style={styles.modalHeader}>
-                            <Text style={[styles.modalTitle, textColor]}>Select Country</Text>
+                            <Text style={[styles.modalTitle, textColor]}>{t('phoneInput.selectCountry')}</Text>
                             <TouchableOpacity
                                 onPress={() => {
                                     setModalVisible(false);
@@ -181,7 +183,7 @@ export default function PhoneNumberInput({ value, onChange }: PhoneNumberInputPr
                                         ? { backgroundColor: "rgba(255, 255, 255, 0.1)", color: COLORS.white }
                                         : { backgroundColor: "rgba(0, 0, 0, 0.05)", color: COLORS.black }
                                 ]}
-                                placeholder="Search countries..."
+                                placeholder={t('phoneInput.searchCountries')}
                                 placeholderTextColor={isDark ? "#AAAAAA" : "#666666"}
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}

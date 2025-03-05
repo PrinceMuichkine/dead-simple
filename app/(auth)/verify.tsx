@@ -11,7 +11,10 @@ import {
     NativeSyntheticEvent,
     TextInputKeyPressEventData,
     Dimensions,
-    ScrollView
+    ScrollView,
+    ImageBackground,
+    Animated,
+    Linking
 } from 'react-native';
 import { useRouter } from 'expo-router/build/hooks';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
@@ -20,13 +23,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { verifyOtp, signInWithPhone } from '@/lib/utils/supabase/client';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
+import { useTranslation } from 'react-i18next';
+import { BackButton } from '@/components/ui/button-expand';
 
 const { width, height } = Dimensions.get('window');
+
+// Temporary color constants until we fully integrate the global styles
+const LOCAL_COLORS = {
+    danger: '#DB4437',
+    warning: '#F4B400',
+    black: '#121212',
+    transparentOverlay: 'rgba(0, 0, 0, 0.3)',
+};
 
 // Number of OTP input fields
 const OTP_LENGTH = 6;
 
 export default function VerifyScreen() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { phone, userType = 'merchant' } = useLocalSearchParams();
     const { updateSession } = useAuth();
@@ -39,6 +53,18 @@ export default function VerifyScreen() {
 
     // Refs for TextInput fields
     const inputRefs = useRef<Array<TextInput | null>>(Array(OTP_LENGTH).fill(null));
+
+    // Fade in animation for the logo
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Start animation when component mounts
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     // Start countdown timer for OTP resend
     useEffect(() => {
@@ -92,6 +118,10 @@ export default function VerifyScreen() {
         }
     };
 
+    const handleGoBack = () => {
+        router.back();
+    };
+
     // Handle OTP verification
     const handleVerify = async () => {
         setError('');
@@ -100,7 +130,7 @@ export default function VerifyScreen() {
         const otpString = otp.join('');
 
         if (otpString.length !== OTP_LENGTH) {
-            setError('Please enter the complete verification code.');
+            setError(t('auth.verifyScreen.enterComplete'));
             setIsLoading(false);
             return;
         }
@@ -115,6 +145,8 @@ export default function VerifyScreen() {
 
             if (response.success && response.data && response.data.session) {
                 await updateSession(response.data.session);
+                // Navigate to home or dashboard after successful verification
+                router.replace('/');
             }
         } catch (err: any) {
             setError(err.message || 'Failed to verify code. Please try again.');
@@ -153,107 +185,184 @@ export default function VerifyScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+            style={globalStyles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
             <StatusBar style="light" />
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                style={styles.keyboardView}
+
+            <ImageBackground
+                source={require('../../assets/images/home.png')}
+                style={styles.backgroundImage}
+                resizeMode="cover"
             >
-                <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.content}>
-                        <Text style={styles.title}>Verify Your Phone Number</Text>
-                        <Text style={styles.subtitle}>
-                            We've sent a 6-digit verification code to{' '}
-                            <Text style={styles.phoneText}>{phone}</Text>
-                        </Text>
-
-                        {/* OTP Input Fields */}
-                        <View style={styles.otpContainer}>
-                            {Array(OTP_LENGTH).fill(0).map((_, index) => (
-                                <TextInput
-                                    key={index}
-                                    ref={(ref) => inputRefs.current[index] = ref}
-                                    style={styles.otpInput}
-                                    value={otp[index]}
-                                    onChangeText={(text) => handleOtpChange(text, index)}
-                                    onKeyPress={(e) => handleKeyPress(e, index)}
-                                    keyboardType="number-pad"
-                                    maxLength={1}
-                                    selectTextOnFocus
-                                />
-                            ))}
-                        </View>
-
-                        {/* Error message */}
-                        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-                        {/* Verify Button */}
-                        <TouchableOpacity
-                            style={[styles.button, isLoading && styles.buttonDisabled]}
-                            onPress={handleVerify}
-                            disabled={isLoading}
+                <View style={styles.overlay}>
+                    <SafeAreaView style={styles.container}>
+                        <ScrollView
+                            contentContainerStyle={styles.scrollContent}
+                            keyboardShouldPersistTaps="handled"
                         >
-                            {isLoading ? (
-                                <ActivityIndicator color="#FFFFFF" />
-                            ) : (
-                                <Text style={styles.buttonText}>Verify</Text>
-                            )}
-                        </TouchableOpacity>
+                            <View style={styles.logoContainer}>
+                                <Animated.Image
+                                    source={require('@/assets/jumbo_white.svg')}
+                                    style={[styles.logo, { opacity: fadeAnim }]}
+                                    resizeMode="contain"
+                                />
+                            </View>
 
-                        {/* Resend Code Section */}
-                        <View style={styles.resendContainer}>
-                            <Text style={styles.resendText}>Didn't receive the code? </Text>
-                            {timer > 0 ? (
-                                <Text style={styles.timerText}>Resend in {timer}s</Text>
-                            ) : (
+                            <View style={styles.contentContainer}>
+                                <View style={styles.headerContainer}>
+                                    <Text style={styles.title}>{t('auth.verifyScreen.title')}</Text>
+                                    <Text style={styles.subtitle}>
+                                        {t('auth.verifyScreen.subtitle')}{' '}
+                                        <Text style={styles.phoneText}>{phone}</Text>
+                                    </Text>
+                                </View>
+
+                                {/* OTP Input Fields */}
+                                <View style={styles.otpContainer}>
+                                    {Array(OTP_LENGTH).fill(0).map((_, index) => (
+                                        <TextInput
+                                            key={index}
+                                            ref={(ref) => inputRefs.current[index] = ref}
+                                            style={styles.otpInput}
+                                            value={otp[index]}
+                                            onChangeText={(text) => handleOtpChange(text, index)}
+                                            onKeyPress={(e) => handleKeyPress(e, index)}
+                                            keyboardType="number-pad"
+                                            maxLength={1}
+                                            selectTextOnFocus
+                                            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                        />
+                                    ))}
+                                </View>
+
+                                {/* Error message */}
+                                {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+                                {/* Verify Button */}
                                 <TouchableOpacity
-                                    onPress={handleResendOTP}
-                                    disabled={resendLoading}
+                                    style={[
+                                        styles.button,
+                                        styles.verifyButton,
+                                        isLoading && styles.buttonDisabled
+                                    ]}
+                                    onPress={handleVerify}
+                                    disabled={isLoading}
                                 >
-                                    {resendLoading ? (
-                                        <ActivityIndicator size="small" color={COLORS.primary} />
+                                    {isLoading ? (
+                                        <ActivityIndicator color="#FFFFFF" />
                                     ) : (
-                                        <Text style={styles.resendButton}>Resend Code</Text>
+                                        <Text style={styles.buttonText}>{t('auth.verifyScreen.verifyCode')}</Text>
                                     )}
                                 </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+
+                                {/* Go Back Button */}
+                                <View style={styles.backButtonContainer}>
+                                    <BackButton
+                                        onPress={handleGoBack}
+                                        text={t('auth.verifyScreen.goBack')}
+                                    />
+                                </View>
+
+                                {/* Resend Code Section */}
+                                <View style={styles.resendContainer}>
+                                    <Text style={styles.resendText}>{t('auth.verifyScreen.didntReceiveCode')} </Text>
+                                    {timer > 0 ? (
+                                        <Text style={styles.timerText}>{t('auth.verifyScreen.resendIn')} {timer}{t('auth.verifyScreen.seconds')}</Text>
+                                    ) : (
+                                        <TouchableOpacity
+                                            onPress={handleResendOTP}
+                                            disabled={resendLoading}
+                                        >
+                                            {resendLoading ? (
+                                                <ActivityIndicator size="small" color={COLORS.primary} />
+                                            ) : (
+                                                <Text style={styles.resendButton}>{t('auth.verifyScreen.resendCode')}</Text>
+                                            )}
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+
+                                {/* Footer */}
+                                <View style={styles.footer}>
+                                    <Text style={styles.footerText}>
+                                        {t('home.byContinnuing')}
+                                    </Text>
+                                    <View style={styles.footerLinks}>
+                                        <TouchableOpacity onPress={() => Linking.openURL('https://lomi.africa/terms')}>
+                                            <Text style={styles.footerLink}>{t('home.termsOfService')}</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.footerText}> {t('home.and')} </Text>
+                                        <TouchableOpacity onPress={() => Linking.openURL('https://lomi.africa/privacy')}>
+                                            <Text style={styles.footerLink}>{t('home.privacyPolicy')}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </ScrollView>
+                    </SafeAreaView>
+                </View>
+            </ImageBackground>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    backgroundImage: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        width: '100%',
+        height: '100%',
     },
-    keyboardView: {
+    overlay: {
+        flex: 1,
+        backgroundColor: LOCAL_COLORS.transparentOverlay,
+    },
+    container: {
         flex: 1,
     },
     scrollContent: {
         flexGrow: 1,
+        justifyContent: 'space-between',
+        padding: 20,
     },
-    content: {
-        flex: 1,
-        padding: 24,
+    logoContainer: {
+        alignItems: 'center',
         justifyContent: 'center',
+        marginTop: 40,
+        marginBottom: 20,
+    },
+    logo: {
+        width: width * 0.6,
+        height: 100,
+    },
+    contentContainer: {
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 20,
+        marginBottom: 100,
+        borderRadius: 6,
+        paddingVertical: 25,
+        paddingHorizontal: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    headerContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 20,
     },
     title: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
-        color: '#000000',
-        marginBottom: 16,
+        color: '#FFFFFF',
+        marginBottom: 10,
         textAlign: 'center',
     },
     subtitle: {
         fontSize: 16,
-        color: '#666666',
-        marginBottom: 32,
+        color: 'rgba(255, 255, 255, 0.8)',
         textAlign: 'center',
-        lineHeight: 24,
+        marginBottom: 5,
     },
     phoneText: {
         fontWeight: 'bold',
@@ -262,57 +371,88 @@ const styles = StyleSheet.create({
     otpContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 32,
+        width: '100%',
+        marginBottom: 20,
+        paddingHorizontal: 5,
     },
     otpInput: {
-        width: width / 8,
+        width: `${Math.floor(100 / OTP_LENGTH) - 3}%`, // Adaptive sizing based on number of fields
         height: 56,
-        borderWidth: 1,
-        borderRadius: 8,
-        textAlign: 'center',
-        fontSize: 24,
+        borderRadius: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        color: '#FFFFFF',
+        fontSize: 22,
         fontWeight: 'bold',
-        color: '#000000',
-        borderColor: '#CCCCCC',
-        backgroundColor: '#F5F5F5',
+        textAlign: 'center',
+    },
+    errorText: {
+        color: LOCAL_COLORS.danger,
+        fontSize: 14,
+        marginBottom: 15,
+        textAlign: 'center',
     },
     button: {
-        backgroundColor: COLORS.primary,
-        height: 56,
-        borderRadius: 12,
+        width: '100%',
+        height: 54,
+        borderRadius: 6,
+        borderWidth: 6,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 24,
+        marginBottom: 15,
+    },
+    verifyButton: {
+        backgroundColor: COLORS.warning, // Yellow button
+        borderColor: COLORS.warning,
+    },
+    backButtonContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 15,
     },
     buttonDisabled: {
         opacity: 0.7,
     },
     buttonText: {
         color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 16,
+        fontWeight: '600',
     },
     resendContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: 20,
     },
     resendText: {
+        color: 'rgba(255, 255, 255, 0.8)',
         fontSize: 14,
-        color: '#666666',
     },
     resendButton: {
-        fontSize: 14,
-        fontWeight: 'bold',
         color: COLORS.primary,
+        fontSize: 14,
+        fontWeight: '600',
     },
     timerText: {
+        color: COLORS.warning,
         fontSize: 14,
-        color: '#999999',
+        fontWeight: '600',
     },
-    errorText: {
-        color: '#FF0000',
-        marginBottom: 16,
-        textAlign: 'center',
+    footer: {
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    footerText: {
+        color: COLORS.white,
+        fontSize: 12,
+    },
+    footerLinks: {
+        flexDirection: 'row',
+        marginTop: 5,
+    },
+    footerLink: {
+        color: COLORS.primary,
+        fontSize: 12,
+        fontWeight: '600',
+        marginHorizontal: 5,
     },
 }); 

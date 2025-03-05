@@ -1,0 +1,46 @@
+{
+  "home": {
+    "continueWithPhone": "Continuer avec le téléphone",
+    "continueWithEmail": "Continuer avec votre email",
+    "continueWithGoogle": "Continuer avec Google",
+    "continueWithApple": "Continuer avec Apple",
+    "or": "OU",
+    "byContinnuing": "En continuant, vous acceptez nos",
+    "termsOfService": "Conditions d'utilisation",
+    "and": "et",
+    "privacyPolicy": "Politique de confidentialité"
+  },
+  "auth": {
+    "emailScreen": {
+      "title": "Accéder à Jumbo",
+      "subtitle": "Entrez votre email pour recevoir un lien de connexion",
+      "placeholder": "Adresse email**",
+      "sendTheLink": "Envoyer le lien",
+      "goBack": "Retourner",
+      "emailSent": "Email envoyé",
+      "checkEmail": "Veuillez vérifier votre email pour un lien de vérification",
+      "ok": "OK",
+      "invalidEmail": "Email invalide",
+      "enterValidEmail": "Veuillez entrer une adresse email valide"
+    },
+    "verifyScreen": {
+      "title": "Vérifiez votre numéro",
+      "subtitle": "Nous avons envoyé un code de vérification à 6 chiffres à",
+      "verifyCode": "Vérifier le code",
+      "didntReceiveCode": "Vous n'avez pas reçu le code?",
+      "resendIn": "Renvoyer dans",
+      "seconds": "s",
+      "resendCode": "Renvoyer le code",
+      "goBack": "Retourner",
+      "enterComplete": "Veuillez entrer le code de vérification complet."
+    }
+  },
+  "phoneInput": {
+    "placeholder": "Numéro de téléphone**",
+    "selectCountry": "Sélectionner votre pays",
+    "searchCountries": "Rechercher"
+  },
+  "common": {
+    "loading": "Chargement..."
+  }
+} 

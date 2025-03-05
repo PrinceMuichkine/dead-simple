@@ -9,6 +9,8 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/builtin/useColorScheme';
 import { ThemeProvider } from '@/lib/contexts/ThemeContext';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
+import { LanguageProvider } from '@/lib/contexts/LanguageContext';
+import '../lib/i18n';
 
 // Temporarily comment out this export due to TypeScript issues
 // We'll uncomment this once the expo-router type issues are resolved
@@ -55,14 +57,16 @@ function RootLayoutNav() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </NavigationThemeProvider>
+        <LanguageProvider>
+          <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            </Stack>
+          </NavigationThemeProvider>
+        </LanguageProvider>
       </AuthProvider>
     </ThemeProvider>
   );

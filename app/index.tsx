@@ -19,6 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import PhoneNumberInput from '@/components/ui/phone-number-input';
 import { useTheme } from '@/lib/contexts/ThemeContext';
 import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/lib/contexts/LanguageContext';
 
 // We'll need to implement or adapt these imports as we build out the app
 // import { useAuth } from '@/lib/contexts/AuthContext';
@@ -39,6 +41,8 @@ type UserType = 'merchant' | 'shopper';
 
 export default function HomePage() {
     // const { user, isLoading } = useAuth(); // We'll add this when AuthContext is set up
+    const { t } = useTranslation();
+    const { language, changeLanguage } = useLanguage();
     const { isDark } = useTheme();
     const [phone, setPhone] = useState('');
     const [isAuthLoading, setIsAuthLoading] = useState(false);
@@ -101,6 +105,11 @@ export default function HomePage() {
         setUserType(type);
     };
 
+    // Toggle language between English and French
+    const toggleLanguage = () => {
+        changeLanguage(language === 'en' ? 'fr' : 'en');
+    };
+
     // Loading state (temporarily disabled until we set up AuthContext)
     // if (isLoading) {
     //     return (
@@ -124,13 +133,23 @@ export default function HomePage() {
             >
                 <View style={styles.overlay}>
                     <SafeAreaView style={styles.container}>
+                        {/* Language toggle button */}
+                        <TouchableOpacity
+                            style={styles.languageToggle}
+                            onPress={toggleLanguage}
+                        >
+                            <Text style={styles.languageToggleText}>
+                                {language === 'en' ? 'FR' : 'EN'}
+                            </Text>
+                        </TouchableOpacity>
+
                         <ScrollView
                             contentContainerStyle={styles.scrollContent}
                             keyboardShouldPersistTaps="handled"
                         >
                             <View style={styles.logoContainer}>
                                 <Image
-                                    source={require('@/assets/jumbo_white.svg')}
+                                    source={require('@/assets/jumbo_main_white.svg')}
                                     style={styles.logo}
                                     resizeMode="contain"
                                 />
@@ -152,14 +171,14 @@ export default function HomePage() {
                                         style={[styles.socialButton, styles.phoneButton]}
                                         onPress={handlePhoneAuth}
                                     >
-                                        <Text style={styles.socialButtonText}>Continue with Phone</Text>
+                                        <Text style={styles.socialButtonText}>{t('home.continueWithPhone')}</Text>
                                     </TouchableOpacity>
                                 </View>
 
                                 {/* Divider */}
                                 <View style={styles.dividerContainer}>
                                     <View style={styles.divider} />
-                                    <Text style={styles.dividerText}>OR</Text>
+                                    <Text style={styles.dividerText}>{t('home.or')}</Text>
                                     <View style={styles.divider} />
                                 </View>
 
@@ -175,7 +194,7 @@ export default function HomePage() {
                                             <FontAwesome name="envelope" size={20} color="white" />
                                         </View>
                                         <Text style={styles.socialButtonText}>
-                                            Continue with Email
+                                            {t('home.continueWithEmail')}
                                         </Text>
                                     </TouchableOpacity>
 
@@ -190,7 +209,7 @@ export default function HomePage() {
                                                 <FontAwesome name="google" size={20} color="white" />
                                             </View>
                                             <Text style={styles.socialButtonText}>
-                                                Continue with Google
+                                                {t('home.continueWithGoogle')}
                                             </Text>
                                         </TouchableOpacity>
                                     )}
@@ -206,7 +225,7 @@ export default function HomePage() {
                                                 <FontAwesome name="apple" size={24} color="white" />
                                             </View>
                                             <Text style={styles.socialButtonText}>
-                                                Continue with Apple
+                                                {t('home.continueWithApple')}
                                             </Text>
                                         </TouchableOpacity>
                                     )}
@@ -215,15 +234,15 @@ export default function HomePage() {
                                 {/* Footer */}
                                 <View style={styles.footer}>
                                     <Text style={styles.footerText}>
-                                        By continuing, you agree to our
+                                        {t('home.byContinnuing')}
                                     </Text>
                                     <View style={styles.footerLinks}>
                                         <TouchableOpacity onPress={() => Linking.openURL('https://lomi.africa/terms')}>
-                                            <Text style={styles.footerLink}>Terms of Service</Text>
+                                            <Text style={styles.footerLink}>{t('home.termsOfService')}</Text>
                                         </TouchableOpacity>
-                                        <Text style={styles.footerText}> and </Text>
+                                        <Text style={styles.footerText}> {t('home.and')} </Text>
                                         <TouchableOpacity onPress={() => Linking.openURL('https://lomi.africa/privacy')}>
-                                            <Text style={styles.footerLink}>Privacy Policy</Text>
+                                            <Text style={styles.footerLink}>{t('home.privacyPolicy')}</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -254,6 +273,23 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+    },
+    languageToggle: {
+        position: 'absolute',
+        top: 15,
+        right: 15,
+        zIndex: 10,
+        width: 40,
+        height: 40,
+        borderRadius: 6,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    languageToggleText: {
+        color: COLORS.white,
+        fontWeight: 'bold',
+        fontSize: 16,
     },
     scrollContent: {
         flexGrow: 1,
@@ -296,6 +332,8 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: LOCAL_COLORS.warning,
         height: 54,
+        borderWidth: 6, // Added for style consistency
+        borderColor: LOCAL_COLORS.warning,
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -327,6 +365,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         width: '100%',
         height: 54,
+        borderWidth: 6, // Added for style consistency
     },
     socialIconContainer: {
         position: 'absolute',
@@ -337,12 +376,15 @@ const styles = StyleSheet.create({
     },
     emailButton: {
         backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
     },
     googleButton: {
         backgroundColor: LOCAL_COLORS.danger,
+        borderColor: LOCAL_COLORS.danger,
     },
     appleButton: {
         backgroundColor: LOCAL_COLORS.black,
+        borderColor: LOCAL_COLORS.black,
     },
     socialButtonText: {
         color: COLORS.white,

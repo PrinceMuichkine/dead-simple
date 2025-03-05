@@ -20,7 +20,7 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
   },
   button: {
-    borderRadius: 10,
+    borderRadius: 6, // Changed from 10 to 6 to match style guide
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
@@ -46,12 +46,25 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: COLORS.white,
   },
+  transparentButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 0, // No border
+    paddingVertical: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+  },
   buttonText: {
     color: COLORS.white,
     fontWeight: '600',
     fontSize: 16,
   },
   outlineButtonText: {
+    color: COLORS.white,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  transparentButtonText: {
     color: COLORS.white,
     fontWeight: '600',
     fontSize: 16,
@@ -73,7 +86,7 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 15,
-    borderRadius: 10,
+    borderRadius: 6, // Changed from 10 to 6 to match style guide
     marginBottom: 15,
     borderWidth: 6,
   },
@@ -85,7 +98,7 @@ export const globalStyles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 10,
+    borderRadius: 6, // Changed from 10 to 6 to match style guide
     color: COLORS.white,
     paddingHorizontal: 15,
     paddingVertical: 12,
