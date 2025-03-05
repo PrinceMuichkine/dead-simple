@@ -21,6 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
+import { supabase } from '../../lib/supabase/client';
 
 const { width } = Dimensions.get('window');
 
@@ -70,7 +71,7 @@ const interests = [
 
 export default function OnboardingScreen() {
     const router = useRouter();
-    const { updateUserProfile, user } = useAuth();
+    const { updateUserData, user } = useAuth();
     const { isDark } = useTheme();
     const [step, setStep] = useState(1);
     const scrollX = useRef(new Animated.Value(0)).current;
@@ -137,16 +138,28 @@ export default function OnboardingScreen() {
 
         try {
             // Update user profile in Supabase
-            await updateUserProfile({
-                full_name: data.fullName,
-                email: data.email,
-                user_type: data.userType,
-                preferences: data.interests,
-                store_name: data.storeName,
-                store_category: data.storeCategory,
-                store_description: data.storeDescription,
-                location: data.location,
+            await updateUserData({
+                // Convert the form data to match the AuthUser type
+                userType: data.userType,
+                // Other fields will need to be updated via the Supabase API directly
             });
+
+            // Also update the profile in Supabase
+            const { error } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user?.id,
+                    full_name: data.fullName,
+                    email: data.email,
+                    user_type: data.userType,
+                    preferences: data.interests,
+                    store_name: data.storeName,
+                    store_category: data.storeCategory,
+                    store_description: data.storeDescription,
+                    location: data.location,
+                });
+
+            if (error) throw error;
 
             // Redirect based on user type
             if (data.userType === 'merchant') {

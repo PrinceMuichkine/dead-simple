@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     ScrollView,
     ActivityIndicator,
-    FlatList,
     Image,
     RefreshControl,
     Dimensions
@@ -56,15 +55,46 @@ const MOCK_RECENT_ORDERS = [
     },
 ];
 
+// Define proper interfaces for our data
+interface StoreData {
+    id: string;
+    name: string;
+    description: string;
+    logo_url?: string;
+    banner_url?: string;
+    created_at: string;
+    owner_id: string;
+    category?: string;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    image_url?: string;
+    inventory_count: number;
+    created_at: string;
+}
+
+interface Order {
+    id: string;
+    customer_name: string;
+    total_amount: number;
+    status: string;
+    created_at: string;
+    items: number;
+}
+
 export default function MerchantDashboardScreen() {
     const router = useRouter();
     const { user, signOut } = useAuth();
     const { isDark } = useTheme();
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [storeData, setStoreData] = useState<any>(null);
-    const [products, setProducts] = useState<any[]>([]);
-    const [recentOrders, setRecentOrders] = useState<any[]>([]);
+    const [storeData, setStoreData] = useState<StoreData | null>(null);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
     const screenWidth = Dimensions.get('window').width;
 
@@ -121,7 +151,7 @@ export default function MerchantDashboardScreen() {
 
     if (isLoading) {
         return (
-            <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#F5F5F5' }]}>
+            <View style={[styles.container, isDark ? styles.darkBackground : styles.lightBackground]}>
                 <ActivityIndicator size="large" color="#FF5722" />
             </View>
         );
@@ -192,56 +222,72 @@ export default function MerchantDashboardScreen() {
                 </View>
             </View>
 
-            {/* Action buttons */}
-            <View style={styles.actionButtons}>
-                <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}
-                    onPress={() => router.push('/merchant/products')}
-                >
-                    <Ionicons name="pricetags-outline" size={24} color="#FF5722" />
-                    <Text style={[styles.actionButtonText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
-                        Products
-                    </Text>
-                </TouchableOpacity>
+            {/* Quick actions */}
+            <View style={styles.quickActionsContainer}>
+                <Text style={[styles.sectionTitle, isDark ? styles.darkText : styles.lightText]}>
+                    Quick Actions
+                </Text>
 
-                <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}
-                    onPress={() => router.push('/merchant/orders')}
-                >
-                    <Ionicons name="receipt-outline" size={24} color="#4CAF50" />
-                    <Text style={[styles.actionButtonText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
-                        Orders
-                    </Text>
-                </TouchableOpacity>
+                <View style={styles.actionsRow}>
+                    <TouchableOpacity
+                        style={[styles.actionButton, isDark ? styles.darkCard : styles.lightCard]}
+                        onPress={() => router.push('/merchant/add-product')}
+                    >
+                        <Ionicons name="add-circle-outline" size={24} color="#FF5722" />
+                        <Text style={[styles.actionButtonText, isDark ? styles.darkText : styles.lightText]}>
+                            Add Product
+                        </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}
-                    onPress={() => router.push('/merchant/settings')}
-                >
-                    <Ionicons name="settings-outline" size={24} color="#2196F3" />
-                    <Text style={[styles.actionButtonText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
-                        Settings
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.actionButton, isDark ? styles.darkCard : styles.lightCard]}
+                        onPress={() => router.push('/merchant/products')}
+                    >
+                        <Ionicons name="pricetags-outline" size={24} color="#FF5722" />
+                        <Text style={[styles.actionButtonText, isDark ? styles.darkText : styles.lightText]}>
+                            Products
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.actionButton, isDark ? styles.darkCard : styles.lightCard]}
+                        onPress={() => router.push('/merchant/orders')}
+                    >
+                        <Ionicons name="receipt-outline" size={24} color="#4CAF50" />
+                        <Text style={[styles.actionButtonText, isDark ? styles.darkText : styles.lightText]}>
+                            Orders
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.actionButton, isDark ? styles.darkCard : styles.lightCard]}
+                        onPress={() => router.push('/merchant/settings')}
+                    >
+                        <Ionicons name="settings-outline" size={24} color="#2196F3" />
+                        <Text style={[styles.actionButtonText, isDark ? styles.darkText : styles.lightText]}>
+                            Settings
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Analytics cards */}
             <View style={styles.analyticsContainer}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                <Text style={[styles.sectionTitle, isDark ? styles.darkText : styles.lightText]}>
                     Analytics Overview
                 </Text>
 
                 <View style={styles.analyticsRow}>
-                    <View style={[styles.analyticsCard, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}>
-                        <Text style={[styles.analyticsValue, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                    <View style={[styles.analyticsCard, isDark ? styles.darkCard : styles.lightCard]}>
+                        <Text style={[styles.analyticsValue, isDark ? styles.darkText : styles.lightText]}>
                             {formatCurrency(MOCK_ANALYTICS.salesThisWeek)}
                         </Text>
-                        <Text style={[styles.analyticsLabel, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                        <Text style={[styles.analyticsLabel, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                             Sales this week
                         </Text>
                         <View style={[
                             styles.growthIndicator,
-                            { backgroundColor: salesGrowth >= 0 ? '#E6F7ED' : '#FDEDED' }
+                            salesGrowth >= 0 ? styles.positiveGrowthBackground : styles.negativeGrowthBackground
                         ]}>
                             <Ionicons
                                 name={salesGrowth >= 0 ? "arrow-up" : "arrow-down"}
@@ -250,23 +296,23 @@ export default function MerchantDashboardScreen() {
                             />
                             <Text style={[
                                 styles.growthText,
-                                { color: salesGrowth >= 0 ? '#4CAF50' : '#F44336' }
+                                salesGrowth >= 0 ? styles.positiveGrowthText : styles.negativeGrowthText
                             ]}>
-                                {Math.abs(salesGrowth).toFixed(1)}%
+                                {Math.abs(salesGrowth)}%
                             </Text>
                         </View>
                     </View>
 
-                    <View style={[styles.analyticsCard, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}>
-                        <Text style={[styles.analyticsValue, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                    <View style={[styles.analyticsCard, isDark ? styles.darkCard : styles.lightCard]}>
+                        <Text style={[styles.analyticsValue, isDark ? styles.darkText : styles.lightText]}>
                             {MOCK_ANALYTICS.ordersThisWeek}
                         </Text>
-                        <Text style={[styles.analyticsLabel, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                        <Text style={[styles.analyticsLabel, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                             Orders this week
                         </Text>
                         <View style={[
                             styles.growthIndicator,
-                            { backgroundColor: ordersGrowth >= 0 ? '#E6F7ED' : '#FDEDED' }
+                            ordersGrowth >= 0 ? styles.positiveGrowthBackground : styles.negativeGrowthBackground
                         ]}>
                             <Ionicons
                                 name={ordersGrowth >= 0 ? "arrow-up" : "arrow-down"}
@@ -275,29 +321,29 @@ export default function MerchantDashboardScreen() {
                             />
                             <Text style={[
                                 styles.growthText,
-                                { color: ordersGrowth >= 0 ? '#4CAF50' : '#F44336' }
+                                ordersGrowth >= 0 ? styles.positiveGrowthText : styles.negativeGrowthText
                             ]}>
-                                {Math.abs(ordersGrowth).toFixed(1)}%
+                                {Math.abs(ordersGrowth)}%
                             </Text>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.analyticsRow}>
-                    <View style={[styles.analyticsCard, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}>
-                        <Text style={[styles.analyticsValue, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                    <View style={[styles.analyticsCard, isDark ? styles.darkCard : styles.lightCard]}>
+                        <Text style={[styles.analyticsValue, isDark ? styles.darkText : styles.lightText]}>
                             {MOCK_ANALYTICS.viewsToday}
                         </Text>
-                        <Text style={[styles.analyticsLabel, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                        <Text style={[styles.analyticsLabel, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                             Store views today
                         </Text>
                     </View>
 
-                    <View style={[styles.analyticsCard, { backgroundColor: isDark ? '#333333' : '#FFFFFF' }]}>
-                        <Text style={[styles.analyticsValue, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                    <View style={[styles.analyticsCard, isDark ? styles.darkCard : styles.lightCard]}>
+                        <Text style={[styles.analyticsValue, isDark ? styles.darkText : styles.lightText]}>
                             {MOCK_ANALYTICS.activeProducts}
                         </Text>
-                        <Text style={[styles.analyticsLabel, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                        <Text style={[styles.analyticsLabel, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                             Active products
                         </Text>
                     </View>
@@ -405,14 +451,15 @@ const styles = StyleSheet.create({
     storeCategory: {
         fontSize: 14,
     },
-    actionButtons: {
-        flexDirection: 'row',
+    quickActionsContainer: {
         padding: 20,
-        paddingTop: 0,
+    },
+    actionsRow: {
+        flexDirection: 'row',
         justifyContent: 'space-between',
     },
     actionButton: {
-        width: '30%',
+        width: '24%',
         padding: 15,
         borderRadius: 8,
         alignItems: 'center',
@@ -554,4 +601,40 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
+    darkBackground: {
+        backgroundColor: '#121212'
+    },
+    lightBackground: {
+        backgroundColor: '#F5F5F5'
+    },
+    darkText: {
+        color: '#FFFFFF'
+    },
+    lightText: {
+        color: '#333333'
+    },
+    darkSecondaryText: {
+        color: '#BBBBBB'
+    },
+    lightSecondaryText: {
+        color: '#666666'
+    },
+    darkCard: {
+        backgroundColor: '#333333'
+    },
+    lightCard: {
+        backgroundColor: '#FFFFFF'
+    },
+    positiveGrowthBackground: {
+        backgroundColor: '#E6F7ED'
+    },
+    negativeGrowthBackground: {
+        backgroundColor: '#FDEDED'
+    },
+    positiveGrowthText: {
+        color: '#4CAF50'
+    },
+    negativeGrowthText: {
+        color: '#F44336'
+    }
 }); 

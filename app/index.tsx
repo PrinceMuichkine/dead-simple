@@ -6,20 +6,20 @@ import {
     Image,
     TouchableOpacity,
     Platform,
-    ScrollView,
     Dimensions,
     ActivityIndicator,
     FlatList,
     Animated,
-    ImageBackground
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons as IoniconsType } from '@expo/vector-icons/build/Icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signInWithOAuth } from '../lib/supabase/client';
+import { getAsset } from '../lib/utils/assetUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -27,19 +27,19 @@ const { width } = Dimensions.get('window');
 const carouselItems = [
     {
         id: '1',
-        image: require('../assets/onboarding-1.png'),
+        image: getAsset('onboarding-1'),
         title: 'Welcome to JUMBO',
         description: 'The marketplace that connects you with local merchants',
     },
     {
         id: '2',
-        image: require('../assets/onboarding-2.png'),
+        image: getAsset('onboarding-2'),
         title: 'Set up your store in minutes',
         description: 'Start selling your products quickly and easily',
     },
     {
         id: '3',
-        image: require('../assets/onboarding-3.png'),
+        image: getAsset('onboarding-3'),
         title: 'Secure payments',
         description: 'Safe and reliable payment options for all transactions',
     },
@@ -121,25 +121,25 @@ export default function HomeScreen() {
 
     if (isLoading) {
         return (
-            <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#F5F5F5' }]}>
+            <View style={[styles.container, isDark ? styles.darkBackground : styles.lightBackground]}>
                 <ActivityIndicator size="large" color={isDark ? '#FFFFFF' : '#000000'} />
             </View>
         );
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#F5F5F5' }]}>
+        <SafeAreaView style={[styles.container, isDark ? styles.darkBackground : styles.lightBackground]}>
             <StatusBar style={isDark ? 'light' : 'dark'} />
 
             {/* Logo and Header */}
             <View style={styles.header}>
                 <Image
-                    source={require('../assets/logo.png')}
+                    source={getAsset('logo')}
                     style={styles.logo}
                     resizeMode="contain"
                 />
                 <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-                    <Text style={[styles.loginText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                    <Text style={[styles.loginText, isDark ? styles.darkText : styles.lightText]}>
                         Login
                     </Text>
                 </TouchableOpacity>
@@ -169,10 +169,10 @@ export default function HomeScreen() {
                         <View style={styles.carouselItem}>
                             <Image source={item.image} style={styles.carouselImage} />
                             <View style={styles.carouselTextContainer}>
-                                <Text style={[styles.carouselTitle, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                                <Text style={[styles.carouselTitle, isDark ? styles.darkText : styles.lightText]}>
                                     {item.title}
                                 </Text>
-                                <Text style={[styles.carouselDescription, { color: isDark ? '#CCCCCC' : '#666666' }]}>
+                                <Text style={[styles.carouselDescription, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                                     {item.description}
                                 </Text>
                             </View>
@@ -206,10 +206,10 @@ export default function HomeScreen() {
                                 key={index}
                                 style={[
                                     styles.paginationDot,
+                                    isDark ? styles.darkDot : styles.lightDot,
                                     {
                                         width: dotWidth,
                                         opacity,
-                                        backgroundColor: isDark ? '#FFFFFF' : '#333333'
                                     },
                                 ]}
                             />
@@ -220,7 +220,7 @@ export default function HomeScreen() {
 
             {/* Authentication Options */}
             <View style={styles.authContainer}>
-                <Text style={[styles.authTitle, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                <Text style={[styles.authTitle, isDark ? styles.darkText : styles.lightText]}>
                     Get Started
                 </Text>
 
@@ -262,10 +262,10 @@ export default function HomeScreen() {
                 )}
 
                 <View style={styles.termsContainer}>
-                    <Text style={[styles.termsText, { color: isDark ? '#CCCCCC' : '#666666' }]}>
+                    <Text style={[styles.termsText, isDark ? styles.darkText : styles.lightText]}>
                         By continuing, you agree to our{' '}
-                        <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
-                        <Text style={styles.termsLink}>Privacy Policy</Text>
+                        <Text style={[styles.termsLink, isDark ? styles.darkText : styles.lightText]}>Terms of Service</Text> and{' '}
+                        <Text style={[styles.termsLink, isDark ? styles.darkText : styles.lightText]}>Privacy Policy</Text>
                     </Text>
                 </View>
             </View>
@@ -275,16 +275,18 @@ export default function HomeScreen() {
 
 // Feature item component for highlighting key features
 interface FeatureItemProps {
-    icon: any;
+    icon: keyof typeof IoniconsType.glyphMap;
     text: string;
     isDark: boolean;
 }
 
-function FeatureItem({ icon, text, isDark }: FeatureItemProps) {
+// Prefix with underscore to indicate it's not used currently but kept for future use
+// eslint-disable-next-line no-unused-vars
+function _FeatureItem({ icon, text, isDark }: FeatureItemProps) {
     return (
-        <View style={[styles.featureItem, { backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF' }]}>
+        <View style={[styles.featureItem, isDark ? styles.darkBackground : styles.lightBackground]}>
             <Ionicons name={icon} size={24} color="#FF9500" />
-            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+            <Text style={[styles.featureText, isDark ? styles.darkText : styles.lightText]}>
                 {text}
             </Text>
         </View>
@@ -414,5 +416,29 @@ const styles = StyleSheet.create({
     featureText: {
         fontSize: 16,
         marginLeft: 16,
+    },
+    darkBackground: {
+        backgroundColor: '#121212',
+    },
+    lightBackground: {
+        backgroundColor: '#F5F5F5',
+    },
+    darkText: {
+        color: '#FFFFFF',
+    },
+    lightText: {
+        color: '#333333',
+    },
+    darkSecondaryText: {
+        color: '#CCCCCC',
+    },
+    lightSecondaryText: {
+        color: '#666666',
+    },
+    darkDot: {
+        backgroundColor: '#FFFFFF',
+    },
+    lightDot: {
+        backgroundColor: '#333333',
     },
 }); 

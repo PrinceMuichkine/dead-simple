@@ -66,97 +66,81 @@ export default function LoginScreen() {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={styles.keyboardView}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView
                 contentContainerStyle={[
                     styles.container,
-                    { backgroundColor: isDark ? '#121212' : '#F5F5F5' }
+                    isDark ? styles.darkBackground : styles.lightBackground
                 ]}
             >
                 <StatusBar style={isDark ? 'light' : 'dark'} />
 
                 <TouchableOpacity
-                    style={styles.backButton}
                     onPress={() => router.back()}
+                    style={styles.backButton}
                 >
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color={isDark ? '#FFFFFF' : '#000000'}
-                    />
+                    <Ionicons name="arrow-back" size={24} color={isDark ? '#FFFFFF' : '#333333'} />
                 </TouchableOpacity>
 
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
+                    <Text style={[styles.headerText, isDark ? styles.darkText : styles.lightText]}>
                         Welcome Back
                     </Text>
-                    <Text style={[styles.subHeaderText, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                    <Text style={[styles.subHeaderText, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                         Log in with your phone number
                     </Text>
                 </View>
 
                 <View style={styles.formContainer}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#BBBBBB' : '#555555' }]}>
+                    <Text style={[styles.inputLabel, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                         Phone Number
                     </Text>
 
                     <Controller
                         control={control}
-                        rules={{
-                            required: 'Phone number is required',
-                            pattern: {
-                                value: /^[0-9+\s]+$/,
-                                message: 'Please enter a valid phone number'
-                            }
-                        }}
-                        render={({ field: { onChange, onBlur, value } }: { field: { onChange: (text: string) => void; onBlur: () => void; value: string } }) => (
+                        name="phone"
+                        render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 style={[
                                     styles.input,
-                                    {
-                                        backgroundColor: isDark ? '#333333' : '#FFFFFF',
-                                        color: isDark ? '#FFFFFF' : '#000000',
-                                        borderColor: errors.phone ? '#FF3B30' : isDark ? '#555555' : '#DDDDDD'
-                                    }
+                                    isDark ? styles.darkInput : styles.lightInput,
+                                    errors.phone && styles.errorInput
                                 ]}
                                 placeholder="Enter your phone number"
-                                placeholderTextColor={isDark ? '#777777' : '#999999'}
+                                placeholderTextColor={isDark ? '#666666' : '#AAAAAA'}
                                 keyboardType="phone-pad"
-                                autoCapitalize="none"
-                                onBlur={onBlur}
-                                onChangeText={onChange}
                                 value={value}
+                                onChangeText={onChange}
+                                onBlur={onBlur}
                             />
                         )}
-                        name="phone"
                     />
-
-                    {errors.phone && (
-                        <Text style={styles.errorText}>
-                            {errors.phone.message}
-                        </Text>
-                    )}
+                    {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
 
                     <TouchableOpacity
-                        style={[styles.button, { opacity: isLoading ? 0.7 : 1 }]}
                         onPress={handleSubmit(onSubmit)}
                         disabled={isLoading}
+                        style={[
+                            styles.loginButton,
+                            isLoading ? styles.disabledButton : null
+                        ]}
                     >
                         {isLoading ? (
-                            <ActivityIndicator size="small" color="#FFFFFF" />
+                            <ActivityIndicator color="#FFFFFF" />
                         ) : (
-                            <Text style={styles.buttonText}>Continue</Text>
+                            <Text style={styles.loginButtonText}>Next</Text>
                         )}
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.createAccountButton}
-                        onPress={() => router.push('/auth/register')}
-                    >
-                        <Text style={[styles.createAccountText, { color: isDark ? '#BBBBBB' : '#666666' }]}>
-                            Don't have an account? Create one
+                    <Text style={[styles.orText, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
+                        Don&apos;t have an account?
+                    </Text>
+
+                    <TouchableOpacity onPress={() => router.push('/auth/register')}>
+                        <Text style={[styles.registerText, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
+                            Register
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -211,7 +195,7 @@ const styles = StyleSheet.create({
         marginTop: -10,
         marginBottom: 15,
     },
-    button: {
+    loginButton: {
         backgroundColor: '#FF5722',
         height: 50,
         borderRadius: 8,
@@ -219,18 +203,56 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 20,
     },
-    buttonText: {
+    loginButtonText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    createAccountButton: {
-        marginTop: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-    },
-    createAccountText: {
+    orText: {
         fontSize: 14,
+        marginTop: 20,
+        marginBottom: 10,
+        textAlign: 'center',
     },
+    registerText: {
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    keyboardView: {
+        flex: 1
+    },
+    darkBackground: {
+        backgroundColor: '#121212'
+    },
+    lightBackground: {
+        backgroundColor: '#F5F5F5'
+    },
+    darkText: {
+        color: '#FFFFFF'
+    },
+    lightText: {
+        color: '#333333'
+    },
+    darkSecondaryText: {
+        color: '#BBBBBB'
+    },
+    lightSecondaryText: {
+        color: '#666666'
+    },
+    darkInput: {
+        backgroundColor: '#333333',
+        color: '#FFFFFF',
+        borderColor: '#555555'
+    },
+    lightInput: {
+        backgroundColor: '#FFFFFF',
+        color: '#000000',
+        borderColor: '#DDDDDD'
+    },
+    errorInput: {
+        borderColor: '#FF3B30'
+    },
+    disabledButton: {
+        opacity: 0.7
+    }
 }); 

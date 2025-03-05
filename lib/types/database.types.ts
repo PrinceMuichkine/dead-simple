@@ -139,6 +139,69 @@ export type Database = {
           },
         ]
       }
+      customer_messages: {
+        Row: {
+          attachments: string[] | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          merchant_id: string | null
+          message: string
+          sender_email: string | null
+          sender_id: string | null
+          sender_name: string | null
+          sender_phone: string | null
+          sender_type: Database["public"]["Enums"]["user_type_enum"] | null
+          store_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attachments?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          merchant_id?: string | null
+          message: string
+          sender_email?: string | null
+          sender_id?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          sender_type?: Database["public"]["Enums"]["user_type_enum"] | null
+          store_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attachments?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          merchant_id?: string | null
+          message?: string
+          sender_email?: string | null
+          sender_id?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          sender_type?: Database["public"]["Enums"]["user_type_enum"] | null
+          store_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_messages_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_messages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           avatar_url: string | null
@@ -1008,44 +1071,6 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
-      }
-      support_messages: {
-        Row: {
-          attachments: string[] | null
-          created_at: string | null
-          id: string
-          message: string
-          request_id: string | null
-          sender_id: string | null
-          sender_type: Database["public"]["Enums"]["user_type_enum"] | null
-        }
-        Insert: {
-          attachments?: string[] | null
-          created_at?: string | null
-          id?: string
-          message: string
-          request_id?: string | null
-          sender_id?: string | null
-          sender_type?: Database["public"]["Enums"]["user_type_enum"] | null
-        }
-        Update: {
-          attachments?: string[] | null
-          created_at?: string | null
-          id?: string
-          message?: string
-          request_id?: string | null
-          sender_id?: string | null
-          sender_type?: Database["public"]["Enums"]["user_type_enum"] | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "support_messages_request_id_fkey"
-            columns: ["request_id"]
-            isOneToOne: false
-            referencedRelation: "support_requests"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       support_requests: {
         Row: {

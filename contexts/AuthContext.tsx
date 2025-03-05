@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import { supabase } from '../lib/supabase/client';
-import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
+import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 // Define our user types
 type UserType = 'merchant' | 'customer' | null;

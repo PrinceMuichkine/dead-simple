@@ -4,18 +4,40 @@ import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import { parse as parseUrl } from 'expo-linking';
 import * as Linking from 'expo-linking';
+import { Platform } from 'react-native';
 
-// SecureStore adapter for Supabase storage
-const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => {
-    return SecureStore.getItemAsync(key);
-  },
-  setItem: (key: string, value: string) => {
-    return SecureStore.setItemAsync(key, value);
-  },
-  removeItem: (key: string) => {
-    return SecureStore.deleteItemAsync(key);
-  },
+// Platform-specific storage implementation
+const getSupabaseStorage = () => {
+  if (Platform.OS === 'web') {
+    // Use localStorage for web platform
+    return {
+      getItem: (key: string) => {
+        const value = localStorage.getItem(key);
+        return Promise.resolve(value);
+      },
+      setItem: (key: string, value: string) => {
+        localStorage.setItem(key, value);
+        return Promise.resolve(undefined);
+      },
+      removeItem: (key: string) => {
+        localStorage.removeItem(key);
+        return Promise.resolve(undefined);
+      },
+    };
+  } else {
+    // Use SecureStore for native platforms
+    return {
+      getItem: (key: string) => {
+        return SecureStore.getItemAsync(key);
+      },
+      setItem: (key: string, value: string) => {
+        return SecureStore.setItemAsync(key, value);
+      },
+      removeItem: (key: string) => {
+        return SecureStore.deleteItemAsync(key);
+      },
+    };
+  }
 };
 
 // Replace with your Supabase URL and anon key
@@ -36,10 +58,10 @@ const enableGoogleAuth = process.env.EXPO_PUBLIC_ENABLE_GOOGLE_AUTH === 'true' &
 // Create Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: ExpoSecureStoreAdapter,
+    storage: getSupabaseStorage(),
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: Platform.OS === 'web', // Only detect sessions in URL on web
   },
 });
 
@@ -60,23 +82,30 @@ export const signInWithOAuth = async (provider: 'google' | 'apple') => {
     
     if (error) throw error;
     
-    // Open the browser for authentication
-    const result = await WebBrowser.openAuthSessionAsync(
-      data?.url || '',
-      redirectUrl
-    );
-    
-    if (result.type === 'success') {
-      const { url } = result;
-      const parsedUrl = parseUrl(url);
+    if (Platform.OS === 'web') {
+      // For web, we can redirect directly
+      window.location.href = data?.url || '';
+      return { success: true };
+    } else {
+      // For native, use WebBrowser
+      // Open the browser for authentication
+      const result = await WebBrowser.openAuthSessionAsync(
+        data?.url || '',
+        redirectUrl
+      );
       
-      // Handle URL parameters via path and queryParams
-      if (parsedUrl.queryParams && parsedUrl.queryParams.access_token) {
-        return { success: true, data: parsedUrl.queryParams };
+      if (result.type === 'success') {
+        const { url } = result;
+        const parsedUrl = parseUrl(url);
+        
+        // Handle URL parameters via path and queryParams
+        if (parsedUrl.queryParams && parsedUrl.queryParams.access_token) {
+          return { success: true, data: parsedUrl.queryParams };
+        }
       }
+      
+      return { success: false, error: 'Authentication canceled' };
     }
-    
-    return { success: false, error: 'Authentication canceled' };
   } catch (error) {
     console.error('OAuth error:', error);
     return { success: false, error };

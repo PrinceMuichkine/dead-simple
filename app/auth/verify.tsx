@@ -10,13 +10,16 @@ import {
     Platform,
     ScrollView,
     Alert,
-    Keyboard
+    Keyboard,
+    NativeSyntheticEvent,
+    TextInputKeyPressEventData
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { supabase } from '../../lib/supabase/client';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function VerifyScreen() {
     const router = useRouter();
@@ -58,7 +61,7 @@ export default function VerifyScreen() {
         }
     };
 
-    const handleKeyPress = (e: any, index: number) => {
+    const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>, index: number) => {
         // If backspace was pressed and the current field is empty, focus the previous field
         if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
@@ -150,22 +153,26 @@ export default function VerifyScreen() {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={styles.keyboardView}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView
                 contentContainerStyle={[
                     styles.container,
-                    { backgroundColor: isDark ? '#121212' : '#F5F5F5' }
+                    isDark ? styles.darkBackground : styles.lightBackground
                 ]}
             >
                 <StatusBar style={isDark ? 'light' : 'dark'} />
 
+                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                    <Ionicons name="arrow-back" size={24} color={isDark ? '#FFFFFF' : '#333333'} />
+                </TouchableOpacity>
+
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, { color: isDark ? '#FFFFFF' : '#333333' }]}>
-                        Verify Your Phone
+                    <Text style={[styles.headerText, isDark ? styles.darkText : styles.lightText]}>
+                        Verify Your Number
                     </Text>
-                    <Text style={[styles.subHeaderText, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                    <Text style={[styles.subHeaderText, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                         Enter the 6-digit code sent to {phone}
                     </Text>
                 </View>
@@ -174,33 +181,28 @@ export default function VerifyScreen() {
                     {otp.map((digit, index) => (
                         <TextInput
                             key={index}
-                            ref={(ref) => inputRefs.current[index] = ref}
                             style={[
                                 styles.otpInput,
-                                {
-                                    backgroundColor: isDark ? '#333333' : '#FFFFFF',
-                                    color: isDark ? '#FFFFFF' : '#000000',
-                                    borderColor: isDark ? '#555555' : '#DDDDDD'
-                                }
+                                isDark ? styles.darkInput : styles.lightInput
                             ]}
+                            maxLength={1}
+                            keyboardType="number-pad"
                             value={digit}
                             onChangeText={(text) => handleOtpChange(text, index)}
                             onKeyPress={(e) => handleKeyPress(e, index)}
-                            keyboardType="number-pad"
-                            maxLength={1}
-                            textAlign="center"
-                            selectTextOnFocus
+                            ref={(ref) => {
+                                if (ref && !inputRefs.current[index]) {
+                                    inputRefs.current[index] = ref;
+                                }
+                            }}
                         />
                     ))}
                 </View>
 
                 <TouchableOpacity
                     style={[
-                        styles.button,
-                        {
-                            backgroundColor: '#FF5722',
-                            opacity: isLoading || otp.some(digit => !digit) ? 0.7 : 1
-                        }
+                        styles.verifyButton,
+                        (isLoading || otp.some(digit => !digit)) ? styles.disabledButton : null
                     ]}
                     onPress={handleVerify}
                     disabled={isLoading || otp.some(digit => !digit)}
@@ -213,27 +215,19 @@ export default function VerifyScreen() {
                 </TouchableOpacity>
 
                 <View style={styles.resendContainer}>
-                    <Text style={[styles.resendText, { color: isDark ? '#BBBBBB' : '#666666' }]}>
-                        Didn't receive the code?
+                    <Text style={[styles.resendText, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
+                        Didn&apos;t receive the code?
                     </Text>
 
                     {countdown > 0 ? (
-                        <Text style={[styles.countdownText, { color: isDark ? '#BBBBBB' : '#666666' }]}>
+                        <Text style={[styles.countdownText, isDark ? styles.darkSecondaryText : styles.lightSecondaryText]}>
                             Resend in {countdown}s
                         </Text>
                     ) : (
-                        <TouchableOpacity
-                            style={styles.resendButton}
-                            onPress={handleResendOTP}
-                            disabled={isResending}
-                        >
-                            {isResending ? (
-                                <ActivityIndicator size="small" color={isDark ? '#FFFFFF' : '#FF5722'} />
-                            ) : (
-                                <Text style={[styles.resendButtonText, { color: isDark ? '#FF7043' : '#FF5722' }]}>
-                                    Resend Code
-                                </Text>
-                            )}
+                        <TouchableOpacity onPress={handleResendOTP}>
+                            <Text style={[styles.resendButtonText, isDark ? styles.accentText : styles.primaryText]}>
+                                Resend Code
+                            </Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -304,5 +298,58 @@ const styles = StyleSheet.create({
     },
     resendButtonText: {
         fontWeight: '500',
+    },
+    keyboardView: {
+        flex: 1
+    },
+    darkBackground: {
+        backgroundColor: '#121212'
+    },
+    lightBackground: {
+        backgroundColor: '#F5F5F5'
+    },
+    darkText: {
+        color: '#FFFFFF'
+    },
+    lightText: {
+        color: '#333333'
+    },
+    darkSecondaryText: {
+        color: '#BBBBBB'
+    },
+    lightSecondaryText: {
+        color: '#666666'
+    },
+    darkInput: {
+        backgroundColor: '#333333',
+        color: '#FFFFFF',
+        borderColor: '#555555'
+    },
+    lightInput: {
+        backgroundColor: '#FFFFFF',
+        color: '#000000',
+        borderColor: '#DDDDDD'
+    },
+    disabledButton: {
+        opacity: 0.7
+    },
+    accentText: {
+        color: '#FF7043'
+    },
+    primaryText: {
+        color: '#FF5722'
+    },
+    backButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        padding: 5,
+    },
+    verifyButton: {
+        width: '100%',
+        height: 50,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 }); 
