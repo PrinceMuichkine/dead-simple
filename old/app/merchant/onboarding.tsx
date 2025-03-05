@@ -14,13 +14,14 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { useTheme } from '@/lib/contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { supabase } from '@/lib/supabase/client';
+import { STORE_CATEGORIES } from '@/lib/data/onboarding';
 
 type FormData = {
     storeName: string;
@@ -28,19 +29,6 @@ type FormData = {
     location: string;
     mobileMoneyAccount: string;
 };
-
-const STORE_CATEGORIES = [
-    'Fashion & Clothing',
-    'Electronics',
-    'Food & Grocery',
-    'Beauty & Health',
-    'Home & Furniture',
-    'Books & Stationery',
-    'Sports & Outdoors',
-    'Handcrafted & Artisanal',
-    'Jewelry & Accessories',
-    'Other'
-];
 
 export default function MerchantOnboardingScreen() {
     const router = useRouter();
@@ -585,7 +573,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
         borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: 6,
         paddingHorizontal: 15,
         marginBottom: 15,
         fontSize: 16,
@@ -598,7 +586,7 @@ const styles = StyleSheet.create({
     categoryPicker: {
         marginTop: -10,
         marginBottom: 15,
-        borderRadius: 8,
+        borderRadius: 6,
         borderWidth: 1,
         borderColor: '#DDDDDD',
         maxHeight: 200,
@@ -621,7 +609,7 @@ const styles = StyleSheet.create({
     locationButton: {
         width: 50,
         height: 50,
-        borderRadius: 8,
+        borderRadius: 6,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 15,
@@ -634,7 +622,7 @@ const styles = StyleSheet.create({
     },
     button: {
         height: 50,
-        borderRadius: 8,
+        borderRadius: 6,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
@@ -653,6 +641,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '600',
     },
 }); 

@@ -21,7 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { verifyOtp, signInWithPhone } from '@/lib/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
 import { getAsset } from '@/lib/utils/assetUtils';
 
@@ -266,12 +266,12 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     logo: {
-        width: width * 0.4,
-        height: 60,
+        width: width * 0.6,
+        height: 100,
     },
     formContainer: {
         backgroundColor: COLORS.darkOverlay,
-        borderRadius: 15,
+        borderRadius: 6,
         padding: 20,
         width: '100%',
     },

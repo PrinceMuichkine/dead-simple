@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { useTheme } from '@/lib/contexts/ThemeContext';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signInWithOAuth } from '@/lib/supabase/client';
@@ -28,28 +28,6 @@ import PhoneNumberInput from '@/components/ui/phone-number-input';
 const { width, height } = Dimensions.get('window');
 
 type UserType = 'merchant' | 'shopper';
-
-// Carousel images
-const carouselItems = [
-    {
-        id: '1',
-        image: getAsset('onboarding-1'),
-        title: 'Welcome to JUMBO',
-        description: 'The marketplace that connects you with local merchants',
-    },
-    {
-        id: '2',
-        image: getAsset('onboarding-2'),
-        title: 'Set up your store in minutes',
-        description: 'Start selling your products quickly and easily',
-    },
-    {
-        id: '3',
-        image: getAsset('onboarding-3'),
-        title: 'Secure payments',
-        description: 'Safe and reliable payment options for all transactions',
-    },
-];
 
 export default function HomeScreen() {
     const router = useRouter();

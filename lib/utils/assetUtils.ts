@@ -1,17 +1,17 @@
-import { Platform } from 'react-native';
+import { Platform, ImageSourcePropType } from 'react-native';
 
 // Define a specific type for assets
-type AssetType = string | number | { uri: string } | ReturnType<typeof require>;
+type AssetType = ImageSourcePropType;
 
 /**
  * Utility function to get assets in a way that works across platforms
  * @param name The name of the asset
  * @returns The asset reference or null if not found
  */
-export function getAsset(name: string) {
+export function getAsset(name: string): ImageSourcePropType {
   if (!name) {
     console.warn('Asset name is required');
-    return null;
+    return require('@/assets/jumbo_app.svg');
   }
 
   // Assets maps for web and native platforms

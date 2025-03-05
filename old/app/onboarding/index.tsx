@@ -15,13 +15,15 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { useTheme } from '@/lib/contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 import { supabase } from '@/lib/supabase/client';
+import { CATEGORIES, INTERESTS } from "@/lib/data/onboarding";
+import { COLORS } from '@/lib/styles/globalStyles';
 
 const { width } = Dimensions.get('window');
 
@@ -45,29 +47,6 @@ const userSchema = z.object({
 });
 
 type UserData = z.infer<typeof userSchema>;
-
-const categories = [
-    'Fashion',
-    'Electronics',
-    'Beauty',
-    'Food',
-    'Home',
-    'Sports',
-    'Books',
-    'Other'
-];
-
-const interests = [
-    'Fashion',
-    'Electronics',
-    'Beauty',
-    'Food',
-    'Home',
-    'Sports',
-    'Books',
-    'Deals',
-    'Local Products'
-];
 
 export default function OnboardingScreen() {
     const router = useRouter();
@@ -353,15 +332,15 @@ export default function OnboardingScreen() {
                         </Text>
 
                         <View style={styles.interestsContainer}>
-                            {interests.map(interest => (
+                            {INTERESTS.map(interest => (
                                 <TouchableOpacity
                                     key={interest}
                                     style={[
-                                        styles.interestChip,
+                                        styles.interestItem,
                                         {
                                             backgroundColor: selectedInterests.includes(interest) ?
-                                                '#FF9500' : isDark ? '#1E1E1E' : '#FFFFFF',
-                                            borderColor: isDark ? '#333333' : '#DDDDDD'
+                                                COLORS.primary : 'transparent',
+                                            borderColor: COLORS.primary
                                         }
                                     ]}
                                     onPress={() => toggleInterest(interest)}
@@ -370,7 +349,7 @@ export default function OnboardingScreen() {
                                         styles.interestText,
                                         {
                                             color: selectedInterests.includes(interest) ?
-                                                '#FFFFFF' : (isDark ? '#DDDDDD' : '#555555')
+                                                COLORS.white : COLORS.primary
                                         }
                                     ]}>
                                         {interest}
@@ -420,7 +399,7 @@ export default function OnboardingScreen() {
                         </Text>
 
                         <View style={styles.categoriesContainer}>
-                            {categories.map(category => (
+                            {CATEGORIES.map(category => (
                                 <TouchableOpacity
                                     key={category}
                                     style={[
@@ -592,13 +571,13 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 6,
         padding: 15,
         fontSize: 16,
     },
     textArea: {
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 6,
         padding: 15,
         fontSize: 16,
         height: 120,
@@ -615,7 +594,7 @@ const styles = StyleSheet.create({
     },
     userTypeButton: {
         width: '48%',
-        borderRadius: 10,
+        borderRadius: 6,
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
@@ -631,8 +610,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         marginTop: 10,
     },
-    interestChip: {
-        borderRadius: 20,
+    interestItem: {
+        borderRadius: 6,
         paddingVertical: 8,
         paddingHorizontal: 16,
         margin: 5,
@@ -647,7 +626,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     categoryChip: {
-        borderRadius: 20,
+        borderRadius: 6,
         paddingVertical: 8,
         paddingHorizontal: 16,
         margin: 5,
@@ -660,8 +639,8 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     button: {
-        borderRadius: 10,
-        paddingVertical: 16,
+        borderRadius: 6,
+        paddingVertical: 15,
         alignItems: 'center',
         justifyContent: 'center',
     },

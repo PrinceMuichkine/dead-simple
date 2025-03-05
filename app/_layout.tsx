@@ -1,79 +1,59 @@
-import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
+import { useColorScheme } from '@/components/useColorScheme';
+
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
+export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: '(tabs)',
+};
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
-    return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaProvider>
-                <ThemeProvider>
-                    <AuthProvider>
-                        <StatusBar style="auto" />
-                        <RootLayoutNav />
-                    </AuthProvider>
-                </ThemeProvider>
-            </SafeAreaProvider>
-        </GestureHandlerRootView>
-    );
+  const [loaded, error] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    ...FontAwesome.font,
+  });
+
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
-    const { isDark } = useTheme();
+  const colorScheme = useColorScheme();
 
-    return (
-        <Stack
-            screenOptions={{
-                headerStyle: {
-                    backgroundColor: isDark ? '#121212' : '#FF5722',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
-                contentStyle: {
-                    backgroundColor: isDark ? '#121212' : '#F5F5F5',
-                },
-                headerShadowVisible: false,
-            }}
-        >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen
-                name="auth/verify"
-                options={{
-                    headerTitle: 'Verify Phone Number',
-                }}
-            />
-            <Stack.Screen
-                name="merchant/dashboard"
-                options={{
-                    headerTitle: 'Dashboard',
-                }}
-            />
-            <Stack.Screen
-                name="merchant/onboarding"
-                options={{
-                    headerTitle: 'Create Your Store',
-                    headerBackVisible: false,
-                }}
-            />
-            <Stack.Screen
-                name="store/[id]"
-                options={{
-                    headerTitle: 'Store',
-                }}
-            />
-            <Stack.Screen
-                name="product/[id]"
-                options={{
-                    headerTitle: 'Product Details',
-                }}
-            />
-        </Stack>
-    );
-} 
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+      </Stack>
+    </ThemeProvider>
+  );
+}

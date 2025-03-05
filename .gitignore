@@ -3,14 +3,17 @@
 # dependencies
 node_modules/
 
-# root
-.cursor/
-
 # Expo
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+
+# root
+.cursor/
+
+# env
+.env
 
 # Native
 *.orig.*
@@ -34,7 +37,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-.env
 
 # typescript
 *.tsbuildinfo
