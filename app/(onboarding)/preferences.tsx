@@ -64,7 +64,7 @@ export default function PreferencesScreen() {
     return (
         <View style={globalStyles.container}>
             <ImageBackground
-                source={require('../../assets/images/home.webp')}
+                source={require('@//assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >

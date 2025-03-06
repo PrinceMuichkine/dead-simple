@@ -6,12 +6,13 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/builtin/useColorScheme';
 import { ThemeProvider } from '@/lib/contexts/ThemeContext';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { LanguageProvider } from '@/lib/contexts/LanguageContext';
 import { NotificationProvider } from '@/lib/contexts/NotificationContext';
 import '../lib/i18n';
+import { useColorScheme } from 'react-native';
+
 
 // Temporarily comment out this export due to TypeScript issues
 // We'll uncomment this once the expo-router type issues are resolved
@@ -22,7 +23,7 @@ import '../lib/i18n';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: 'index',
+  initialRouteName: '(game)',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -30,7 +31,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('@/assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
 
@@ -63,10 +64,9 @@ function RootLayoutNav() {
             <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
               <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-                <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="(game)" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
               </Stack>
             </NavigationThemeProvider>
           </NotificationProvider>

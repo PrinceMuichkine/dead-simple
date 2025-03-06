@@ -18,7 +18,6 @@ import { useTheme } from '@/lib/contexts/ThemeContext';
 import { useRouter } from 'expo-router';
 import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
 import { LdrHatch } from '@/components/ui/ldrs';
 import ProfilePictureUploader from '@/components/ui/avatar-uploader';
 
@@ -77,7 +76,7 @@ export default function ProfileSetupScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ImageBackground
-                source={require('../../assets/images/home.webp')}
+                source={require('@//assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >

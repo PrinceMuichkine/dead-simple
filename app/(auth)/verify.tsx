@@ -194,7 +194,7 @@ export default function VerifyScreen() {
             <StatusBar style="light" />
 
             <ImageBackground
-                source={require('../../assets/images/home.webp')}
+                source={require('@//assets/images/home.webp')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
