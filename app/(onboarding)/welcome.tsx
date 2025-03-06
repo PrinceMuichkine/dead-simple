@@ -87,7 +87,7 @@ export default function WelcomeScreen() {
                         >
                             <View style={styles.headerContainer}>
                                 <Animated.Image
-                                    source={require('@/assets/jumbo_white.svg')}
+                                    source={require('@/assets/')}
                                     style={[styles.logo, { opacity: fadeAnim }]}
                                     resizeMode="contain"
                                 />

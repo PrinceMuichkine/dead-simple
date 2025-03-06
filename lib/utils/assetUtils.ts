@@ -11,24 +11,24 @@ type AssetType = ImageSourcePropType;
 export function getAsset(name: string): ImageSourcePropType {
   if (!name) {
     console.warn('Asset name is required');
-    return require('@/assets/jumbo_app.svg');
+    return require('@/assets/app.svg');
   }
 
   // Assets maps for web and native platforms
   // This is a static object with all assets we need in the app
   const assetMap: Record<string, AssetType> = {
     // Use placeholders for missing assets
-    'onboarding-1': require('@/assets/jumbo_app.svg'),
-    'onboarding-2': require('@/assets/jumbo_app.svg'),
-    'onboarding-3': require('@/assets/jumbo_app.svg'),
-    'logo': require('@/assets/jumbo_app.svg'),
+    'onboarding-1': require('@/assets/app.svg'),
+    'onboarding-2': require('@/assets/app.svg'),
+    'onboarding-3': require('@/assets/app.svg'),
+    'logo': require('@/assets/app.svg'),
     // Add actual assets that exist
-    'icon': require('@/assets/jumbo_app.svg'),
+    'icon': require('@/assets/app.svg'),
     // Add new assets for the updated UI
     'home-bg': require('@/assets/images/home.webp'),
-    'dead-simple-white': require('@/assets/jumbo_white.svg'),
-    'dead-simple-black': require('@/assets/jumbo_black.svg'),
-    'dead-simple-app': require('@/assets/jumbo_app.svg'),
+    'dead-simple-white': require('@/assets/app.svg'),
+    'dead-simple-black': require('@/assets/app.svg'),
+    'dead-simple-app': require('@/assets/app.svg'),
   };
 
   // Get the asset from the map

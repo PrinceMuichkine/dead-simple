@@ -207,7 +207,7 @@ export default function VerifyScreen() {
                         >
                             <View style={styles.logoContainer}>
                                 <Animated.Image
-                                    source={require('@/assets/jumbo_white.svg')}
+                                    source={require('@/assets/')}
                                     style={[styles.logo, { opacity: fadeAnim }]}
                                     resizeMode="contain"
                                 />
