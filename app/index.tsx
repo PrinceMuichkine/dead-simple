@@ -7,7 +7,7 @@ export default function Home() {
     const router = useRouter();
 
     const navigateToGame = () => {
-        router.push('/game-test');
+        router.push('');
     };
 
     return (
