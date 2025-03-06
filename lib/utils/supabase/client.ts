@@ -6,8 +6,13 @@ import { parse as parseUrl } from 'expo-linking';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
+// Check if code is running in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
 // Check if localStorage is available
 const isLocalStorageAvailable = () => {
+  if (!isBrowser) return false;
+  
   try {
     if (typeof localStorage !== 'undefined') {
       return true;
@@ -18,9 +23,21 @@ const isLocalStorageAvailable = () => {
   }
 };
 
+// Empty storage for SSR (server-side rendering)
+const emptyStorage = {
+  getItem: (_key: string) => Promise.resolve(null),
+  setItem: (_key: string, _value: string) => Promise.resolve(),
+  removeItem: (_key: string) => Promise.resolve(),
+};
+
 // Platform-specific storage implementation
 const getSupabaseStorage = () => {
-  if (Platform.OS === 'web') {
+  // For SSR (server-side rendering), use empty storage
+  if (!isBrowser) {
+    return emptyStorage;
+  }
+  
+  if (Platform.OS === 'web' && isLocalStorageAvailable()) {
     // Use localStorage for web platform
     return {
       getItem: (key: string) => {
@@ -99,13 +116,13 @@ const enableSocialAuth = process.env.EXPO_PUBLIC_ENABLE_SOCIAL_AUTH === 'true';
 const enableAppleAuth = process.env.EXPO_PUBLIC_ENABLE_APPLE_AUTH === 'true' && enableSocialAuth;
 const enableGoogleAuth = process.env.EXPO_PUBLIC_ENABLE_GOOGLE_AUTH === 'true' && enableSocialAuth;
 
-// Create Supabase client
+// Create Supabase client with appropriate SSR config
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: getSupabaseStorage(),
-    autoRefreshToken: true,
+    autoRefreshToken: isBrowser, // Only refresh tokens in browser/app environments
     persistSession: true,
-    detectSessionInUrl: Platform.OS === 'web', // Only detect sessions in URL on web
+    detectSessionInUrl: isBrowser && Platform.OS === 'web', // Only detect sessions in URL on web
   },
 });
 

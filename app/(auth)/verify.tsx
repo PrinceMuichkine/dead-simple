@@ -25,6 +25,7 @@ import { COLORS, globalStyles } from '@/lib/styles/globalStyles';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '@/components/ui/button-expand';
 import { LdrHatch } from '@/components/ui/ldrs';
+import { ClientOnly, LoadingIndicator } from '@/components/ui/client-loaders';
 import { useTheme } from '@/lib/contexts/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
@@ -258,7 +259,9 @@ export default function VerifyScreen() {
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
-                                        <LdrHatch />
+                                        <ClientOnly fallback={<LoadingIndicator />}>
+                                            <LdrHatch />
+                                        </ClientOnly>
                                     ) : (
                                         <Text style={styles.buttonText}>{t('auth.verifyScreen.verifyCode')}</Text>
                                     )}
@@ -283,7 +286,9 @@ export default function VerifyScreen() {
                                             disabled={resendLoading}
                                         >
                                             {resendLoading ? (
-                                                <LdrHatch />
+                                                <ClientOnly fallback={<LoadingIndicator />}>
+                                                    <LdrHatch />
+                                                </ClientOnly>
                                             ) : (
                                                 <Text style={styles.resendButton}>{t('auth.verifyScreen.resendCode')}</Text>
                                             )}

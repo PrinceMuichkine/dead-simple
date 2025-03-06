@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '@/lib/styles/globalStyles';
 
+// Client-side only flag to avoid SSR issues
+const isClient = typeof window !== 'undefined';
+
 interface LdrHatchProps {
     size?: number;
     color?: string;
@@ -9,7 +12,26 @@ interface LdrHatchProps {
     stroke?: number;
 }
 
-export function LdrHatch({
+// Safe wrapper for LdrHatch
+export function LdrHatch(props: LdrHatchProps) {
+    // For server-side rendering, return an empty placeholder
+    if (!isClient) {
+        return (
+            <View
+                style={[
+                    styles.container,
+                    { width: props.size || 20, height: props.size || 20 }
+                ]}
+            />
+        );
+    }
+
+    // For client-side, return the actual component
+    return <LdrHatchImpl {...props} />;
+}
+
+// Implementation of LdrHatch that only runs on the client
+function LdrHatchImpl({
     size = 20,
     color = COLORS.white,
     speed = 3.5,

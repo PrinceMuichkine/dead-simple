@@ -1,9 +1,15 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 export default function Home() {
+    const router = useRouter();
+
+    const navigateToGame = () => {
+        router.push('/game-test');
+    };
+
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
@@ -19,11 +25,9 @@ export default function Home() {
                     Collect items and avoid hazards as you progress through levels!
                 </Text>
 
-                <Link href="/(game)/EnhancedBallRoller" asChild>
-                    <TouchableOpacity style={styles.playButton}>
-                        <Text style={styles.playButtonText}>PLAY NOW</Text>
-                    </TouchableOpacity>
-                </Link>
+                <TouchableOpacity style={styles.playButton} onPress={navigateToGame}>
+                    <Text style={styles.playButtonText}>PLAY NOW</Text>
+                </TouchableOpacity>
 
                 <Text style={styles.features}>
                     ✓ Realistic Physics{'\n'}

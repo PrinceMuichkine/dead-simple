@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Canvas, useFrame, useThree } from '@react-three/fiber/native';
+// Use the standard import for React Three Fiber which works on both platforms
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Accelerometer, AccelerometerMeasurement } from 'expo-sensors';
 import * as THREE from 'three';
 import { useRouter } from 'expo-router';
